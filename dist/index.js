@@ -65,15 +65,44 @@ var index =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var VKCodeH = function () {
-		function VKCodeH(el) {
-			(0, _classCallCheck3.default)(this, VKCodeH);
+	/**
+	 * Класс для обработки и запуска подсветки
+	 * 
+	 * @class VKCodeHighlight
+	 */
+	var VKCodeHighlight = function () {
 
-			this.chat = document.querySelectorAll(el);
+		/**
+	  * Creates an instance of VKCodeHighlight.
+	  * 
+	  * @param {string} el
+	  * 
+	  * @memberOf VKCodeHighlight
+	  */
+		function VKCodeHighlight(el) {
+			(0, _classCallCheck3.default)(this, VKCodeHighlight);
+
+			this.chat = el;
 		}
 
-		(0, _createClass3.default)(VKCodeH, [{
+		/**
+	  * Возвращает список элементов, которые подходят под разметку
+	  * 
+	  * @readonly
+	  * 
+	  * @memberOf VKCodeHighlight
+	  */
+
+
+		(0, _createClass3.default)(VKCodeHighlight, [{
 			key: 'rebuildEl',
+
+
+			/**
+	   * Обрабатывает список из getElements
+	   * 
+	   * @memberOf VKCodeHighlight
+	   */
 			value: function rebuildEl() {
 				var arrEl = this.getElements;
 				arrEl.forEach(function (el) {
@@ -83,17 +112,32 @@ var index =
 					el.classList.add('code');
 				});
 			}
+
+			/**
+	   * Первая инициализация
+	   * 
+	   * @memberOf VKCodeHighlight
+	   */
+
 		}, {
 			key: 'init',
 			value: function init() {
 				this.rebuildEl();
 				_highlight2.default.initHighlighting();
 			}
+
+			/**
+	   * 
+	   * Пересборка
+	   * 
+	   * @memberOf VKCodeHighlight
+	   */
+
 		}, {
 			key: 'reinit',
 			value: function reinit() {
 				this.rebuildEl();
-				var arr = document.querySelectorAll('.code');
+				var arr = document.querySelectorAll('code');
 				arr.forEach(function (el) {
 					_highlight2.default.highlightBlock(el);
 				});
@@ -102,7 +146,8 @@ var index =
 			key: 'getElements',
 			get: function get() {
 				var arrEl = [];
-				this.chat.forEach(function (el) {
+				var elements = document.querySelectorAll(this.chat);
+				elements.forEach(function (el) {
 					if (el.innerText.search(/-\/\//g) !== -1) {
 						arrEl.push(el);
 					}
@@ -110,10 +155,10 @@ var index =
 				return arrEl;
 			}
 		}]);
-		return VKCodeH;
+		return VKCodeHighlight;
 	}();
 
-	var start = new VKCodeH('.im_msg_text');
+	var start = new VKCodeHighlight('.im_msg_text');
 	var myStyle = document.createElement('link');
 	myStyle.type = 'text/css';
 	myStyle.rel = 'stylesheet';
