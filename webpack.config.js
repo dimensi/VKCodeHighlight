@@ -112,7 +112,13 @@ module.exports = {
 			include: [paths.assets],
 			loader: 'babel',
 			query: {
-				presets: ['es2015'],
+				presets: [
+					['env', {
+						'targets': {
+							'chrome': 54
+						}
+					}]
+				],
 				plugins: ['transform-runtime']
 			}
 		}, ]

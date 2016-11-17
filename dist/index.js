@@ -47,19 +47,11 @@ var index =
 
 	'use strict';
 
-	var _classCallCheck2 = __webpack_require__(1);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(2);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _highlight = __webpack_require__(22);
+	var _highlight = __webpack_require__(1);
 
 	var _highlight2 = _interopRequireDefault(_highlight);
 
-	var _observeDOM = __webpack_require__(192);
+	var _observeDOM = __webpack_require__(171);
 
 	var _observeDOM2 = _interopRequireDefault(_observeDOM);
 
@@ -70,7 +62,7 @@ var index =
 	 * 
 	 * @class VKCodeHighlight
 	 */
-	var VKCodeHighlight = function () {
+	class VKCodeHighlight {
 
 		/**
 	  * Creates an instance of VKCodeHighlight.
@@ -79,9 +71,7 @@ var index =
 	  * 
 	  * @memberOf VKCodeHighlight
 	  */
-		function VKCodeHighlight(el) {
-			(0, _classCallCheck3.default)(this, VKCodeHighlight);
-
+		constructor(el) {
 			this.chat = el;
 		}
 
@@ -92,80 +82,65 @@ var index =
 	  * 
 	  * @memberOf VKCodeHighlight
 	  */
+		get getElements() {
+			const arrEl = [];
+			const elements = document.querySelectorAll(this.chat);
+			elements.forEach(function (el) {
+				if (el.innerText.search(/-\/\//g) !== -1) {
+					arrEl.push(el);
+				}
+			});
+			return arrEl;
+		}
 
+		/**
+	  * Обрабатывает список из getElements
+	  * 
+	  * @memberOf VKCodeHighlight
+	  */
+		rebuildEl() {
+			const arrEl = this.getElements;
+			arrEl.forEach(function (el) {
+				el.innerHTML = el.innerHTML.replace(/-\/\//g, '').replace(/<br>/g, '\n');
+				let newHtml = `<pre><code>${ el.innerHTML }</pre></code>`;
+				el.innerHTML = newHtml;
+				el.classList.add('code');
+			});
+		}
 
-		(0, _createClass3.default)(VKCodeHighlight, [{
-			key: 'rebuildEl',
+		/**
+	  * Первая инициализация
+	  * 
+	  * @memberOf VKCodeHighlight
+	  */
+		init() {
+			this.rebuildEl();
+			_highlight2.default.initHighlighting();
+		}
 
+		/**
+	  * 
+	  * Пересборка
+	  * 
+	  * @memberOf VKCodeHighlight
+	  */
+		reinit() {
+			this.rebuildEl();
+			const arr = document.querySelectorAll('code');
+			arr.forEach(function (el) {
+				_highlight2.default.highlightBlock(el);
+			});
+		}
+	}
 
-			/**
-	   * Обрабатывает список из getElements
-	   * 
-	   * @memberOf VKCodeHighlight
-	   */
-			value: function rebuildEl() {
-				var arrEl = this.getElements;
-				arrEl.forEach(function (el) {
-					el.innerHTML = el.innerHTML.replace(/-\/\//g, '').replace(/<br>/g, '\n');
-					var newHtml = '<pre><code>' + el.innerHTML + '</pre></code>';
-					el.innerHTML = newHtml;
-					el.classList.add('code');
-				});
-			}
-
-			/**
-	   * Первая инициализация
-	   * 
-	   * @memberOf VKCodeHighlight
-	   */
-
-		}, {
-			key: 'init',
-			value: function init() {
-				this.rebuildEl();
-				_highlight2.default.initHighlighting();
-			}
-
-			/**
-	   * 
-	   * Пересборка
-	   * 
-	   * @memberOf VKCodeHighlight
-	   */
-
-		}, {
-			key: 'reinit',
-			value: function reinit() {
-				this.rebuildEl();
-				var arr = document.querySelectorAll('code');
-				arr.forEach(function (el) {
-					_highlight2.default.highlightBlock(el);
-				});
-			}
-		}, {
-			key: 'getElements',
-			get: function get() {
-				var arrEl = [];
-				var elements = document.querySelectorAll(this.chat);
-				elements.forEach(function (el) {
-					if (el.innerText.search(/-\/\//g) !== -1) {
-						arrEl.push(el);
-					}
-				});
-				return arrEl;
-			}
-		}]);
-		return VKCodeHighlight;
-	}();
-
-	var start = new VKCodeHighlight('.im_msg_text');
-	var myStyle = document.createElement('link');
+	const start = new VKCodeHighlight('.im_msg_text');
+	const myStyle = document.createElement('link');
 	myStyle.type = 'text/css';
 	myStyle.rel = 'stylesheet';
 	myStyle.href = chrome.extension.getURL('/files/styles/atom-one-light.css');
 	document.head.appendChild(myStyle);
 
-	myStyle.onload = function () {
+	myStyle.onload = () => {
 		start.init();
 	};
 
@@ -175,493 +150,183 @@ var index =
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	exports.__esModule = true;
-
-	exports.default = function (instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	};
-
-/***/ },
-/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	var hljs = __webpack_require__(2);
 
-	exports.__esModule = true;
-
-	var _defineProperty = __webpack_require__(3);
-
-	var _defineProperty2 = _interopRequireDefault(_defineProperty);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];
-	      descriptor.enumerable = descriptor.enumerable || false;
-	      descriptor.configurable = true;
-	      if ("value" in descriptor) descriptor.writable = true;
-	      (0, _defineProperty2.default)(target, descriptor.key, descriptor);
-	    }
-	  }
-
-	  return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	    if (staticProps) defineProperties(Constructor, staticProps);
-	    return Constructor;
-	  };
-	}();
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(4), __esModule: true };
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	__webpack_require__(5);
-	var $Object = __webpack_require__(8).Object;
-	module.exports = function defineProperty(it, key, desc){
-	  return $Object.defineProperty(it, key, desc);
-	};
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $export = __webpack_require__(6);
-	// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-	$export($export.S + $export.F * !__webpack_require__(16), 'Object', {defineProperty: __webpack_require__(12).f});
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var global    = __webpack_require__(7)
-	  , core      = __webpack_require__(8)
-	  , ctx       = __webpack_require__(9)
-	  , hide      = __webpack_require__(11)
-	  , PROTOTYPE = 'prototype';
-
-	var $export = function(type, name, source){
-	  var IS_FORCED = type & $export.F
-	    , IS_GLOBAL = type & $export.G
-	    , IS_STATIC = type & $export.S
-	    , IS_PROTO  = type & $export.P
-	    , IS_BIND   = type & $export.B
-	    , IS_WRAP   = type & $export.W
-	    , exports   = IS_GLOBAL ? core : core[name] || (core[name] = {})
-	    , expProto  = exports[PROTOTYPE]
-	    , target    = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE]
-	    , key, own, out;
-	  if(IS_GLOBAL)source = name;
-	  for(key in source){
-	    // contains in native
-	    own = !IS_FORCED && target && target[key] !== undefined;
-	    if(own && key in exports)continue;
-	    // export native or passed
-	    out = own ? target[key] : source[key];
-	    // prevent global pollution for namespaces
-	    exports[key] = IS_GLOBAL && typeof target[key] != 'function' ? source[key]
-	    // bind timers to global for call from export context
-	    : IS_BIND && own ? ctx(out, global)
-	    // wrap global constructors for prevent change them in library
-	    : IS_WRAP && target[key] == out ? (function(C){
-	      var F = function(a, b, c){
-	        if(this instanceof C){
-	          switch(arguments.length){
-	            case 0: return new C;
-	            case 1: return new C(a);
-	            case 2: return new C(a, b);
-	          } return new C(a, b, c);
-	        } return C.apply(this, arguments);
-	      };
-	      F[PROTOTYPE] = C[PROTOTYPE];
-	      return F;
-	    // make static versions for prototype methods
-	    })(out) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
-	    // export proto methods to core.%CONSTRUCTOR%.methods.%NAME%
-	    if(IS_PROTO){
-	      (exports.virtual || (exports.virtual = {}))[key] = out;
-	      // export proto methods to core.%CONSTRUCTOR%.prototype.%NAME%
-	      if(type & $export.R && expProto && !expProto[key])hide(expProto, key, out);
-	    }
-	  }
-	};
-	// type bitmap
-	$export.F = 1;   // forced
-	$export.G = 2;   // global
-	$export.S = 4;   // static
-	$export.P = 8;   // proto
-	$export.B = 16;  // bind
-	$export.W = 32;  // wrap
-	$export.U = 64;  // safe
-	$export.R = 128; // real proto method for `library` 
-	module.exports = $export;
-
-/***/ },
-/* 7 */
-/***/ function(module, exports) {
-
-	// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-	var global = module.exports = typeof window != 'undefined' && window.Math == Math
-	  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
-	if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-
-/***/ },
-/* 8 */
-/***/ function(module, exports) {
-
-	var core = module.exports = {version: '2.4.0'};
-	if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// optional / simple context binding
-	var aFunction = __webpack_require__(10);
-	module.exports = function(fn, that, length){
-	  aFunction(fn);
-	  if(that === undefined)return fn;
-	  switch(length){
-	    case 1: return function(a){
-	      return fn.call(that, a);
-	    };
-	    case 2: return function(a, b){
-	      return fn.call(that, a, b);
-	    };
-	    case 3: return function(a, b, c){
-	      return fn.call(that, a, b, c);
-	    };
-	  }
-	  return function(/* ...args */){
-	    return fn.apply(that, arguments);
-	  };
-	};
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	module.exports = function(it){
-	  if(typeof it != 'function')throw TypeError(it + ' is not a function!');
-	  return it;
-	};
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var dP         = __webpack_require__(12)
-	  , createDesc = __webpack_require__(20);
-	module.exports = __webpack_require__(16) ? function(object, key, value){
-	  return dP.f(object, key, createDesc(1, value));
-	} : function(object, key, value){
-	  object[key] = value;
-	  return object;
-	};
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var anObject       = __webpack_require__(13)
-	  , IE8_DOM_DEFINE = __webpack_require__(15)
-	  , toPrimitive    = __webpack_require__(19)
-	  , dP             = Object.defineProperty;
-
-	exports.f = __webpack_require__(16) ? Object.defineProperty : function defineProperty(O, P, Attributes){
-	  anObject(O);
-	  P = toPrimitive(P, true);
-	  anObject(Attributes);
-	  if(IE8_DOM_DEFINE)try {
-	    return dP(O, P, Attributes);
-	  } catch(e){ /* empty */ }
-	  if('get' in Attributes || 'set' in Attributes)throw TypeError('Accessors not supported!');
-	  if('value' in Attributes)O[P] = Attributes.value;
-	  return O;
-	};
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(14);
-	module.exports = function(it){
-	  if(!isObject(it))throw TypeError(it + ' is not an object!');
-	  return it;
-	};
-
-/***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	module.exports = function(it){
-	  return typeof it === 'object' ? it !== null : typeof it === 'function';
-	};
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = !__webpack_require__(16) && !__webpack_require__(17)(function(){
-	  return Object.defineProperty(__webpack_require__(18)('div'), 'a', {get: function(){ return 7; }}).a != 7;
-	});
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Thank's IE8 for his funny defineProperty
-	module.exports = !__webpack_require__(17)(function(){
-	  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
-	});
-
-/***/ },
-/* 17 */
-/***/ function(module, exports) {
-
-	module.exports = function(exec){
-	  try {
-	    return !!exec();
-	  } catch(e){
-	    return true;
-	  }
-	};
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(14)
-	  , document = __webpack_require__(7).document
-	  // in old IE typeof document.createElement is 'object'
-	  , is = isObject(document) && isObject(document.createElement);
-	module.exports = function(it){
-	  return is ? document.createElement(it) : {};
-	};
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// 7.1.1 ToPrimitive(input [, PreferredType])
-	var isObject = __webpack_require__(14);
-	// instead of the ES6 spec version, we didn't implement @@toPrimitive case
-	// and the second argument - flag - preferred type is a string
-	module.exports = function(it, S){
-	  if(!isObject(it))return it;
-	  var fn, val;
-	  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
-	  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
-	  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
-	  throw TypeError("Can't convert object to primitive value");
-	};
-
-/***/ },
-/* 20 */
-/***/ function(module, exports) {
-
-	module.exports = function(bitmap, value){
-	  return {
-	    enumerable  : !(bitmap & 1),
-	    configurable: !(bitmap & 2),
-	    writable    : !(bitmap & 4),
-	    value       : value
-	  };
-	};
-
-/***/ },
-/* 21 */,
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var hljs = __webpack_require__(23);
-
-	hljs.registerLanguage('1c', __webpack_require__(24));
-	hljs.registerLanguage('abnf', __webpack_require__(25));
-	hljs.registerLanguage('accesslog', __webpack_require__(26));
-	hljs.registerLanguage('actionscript', __webpack_require__(27));
-	hljs.registerLanguage('ada', __webpack_require__(28));
-	hljs.registerLanguage('apache', __webpack_require__(29));
-	hljs.registerLanguage('applescript', __webpack_require__(30));
-	hljs.registerLanguage('cpp', __webpack_require__(31));
-	hljs.registerLanguage('arduino', __webpack_require__(32));
-	hljs.registerLanguage('armasm', __webpack_require__(33));
-	hljs.registerLanguage('xml', __webpack_require__(34));
-	hljs.registerLanguage('asciidoc', __webpack_require__(35));
-	hljs.registerLanguage('aspectj', __webpack_require__(36));
-	hljs.registerLanguage('autohotkey', __webpack_require__(37));
-	hljs.registerLanguage('autoit', __webpack_require__(38));
-	hljs.registerLanguage('avrasm', __webpack_require__(39));
-	hljs.registerLanguage('awk', __webpack_require__(40));
-	hljs.registerLanguage('axapta', __webpack_require__(41));
-	hljs.registerLanguage('bash', __webpack_require__(42));
-	hljs.registerLanguage('basic', __webpack_require__(43));
-	hljs.registerLanguage('bnf', __webpack_require__(44));
-	hljs.registerLanguage('brainfuck', __webpack_require__(45));
-	hljs.registerLanguage('cal', __webpack_require__(46));
-	hljs.registerLanguage('capnproto', __webpack_require__(47));
-	hljs.registerLanguage('ceylon', __webpack_require__(48));
-	hljs.registerLanguage('clean', __webpack_require__(49));
-	hljs.registerLanguage('clojure', __webpack_require__(50));
-	hljs.registerLanguage('clojure-repl', __webpack_require__(51));
-	hljs.registerLanguage('cmake', __webpack_require__(52));
-	hljs.registerLanguage('coffeescript', __webpack_require__(53));
-	hljs.registerLanguage('coq', __webpack_require__(54));
-	hljs.registerLanguage('cos', __webpack_require__(55));
-	hljs.registerLanguage('crmsh', __webpack_require__(56));
-	hljs.registerLanguage('crystal', __webpack_require__(57));
-	hljs.registerLanguage('cs', __webpack_require__(58));
-	hljs.registerLanguage('csp', __webpack_require__(59));
-	hljs.registerLanguage('css', __webpack_require__(60));
-	hljs.registerLanguage('d', __webpack_require__(61));
-	hljs.registerLanguage('markdown', __webpack_require__(62));
-	hljs.registerLanguage('dart', __webpack_require__(63));
-	hljs.registerLanguage('delphi', __webpack_require__(64));
-	hljs.registerLanguage('diff', __webpack_require__(65));
-	hljs.registerLanguage('django', __webpack_require__(66));
-	hljs.registerLanguage('dns', __webpack_require__(67));
-	hljs.registerLanguage('dockerfile', __webpack_require__(68));
-	hljs.registerLanguage('dos', __webpack_require__(69));
-	hljs.registerLanguage('dsconfig', __webpack_require__(70));
-	hljs.registerLanguage('dts', __webpack_require__(71));
-	hljs.registerLanguage('dust', __webpack_require__(72));
-	hljs.registerLanguage('ebnf', __webpack_require__(73));
-	hljs.registerLanguage('elixir', __webpack_require__(74));
-	hljs.registerLanguage('elm', __webpack_require__(75));
-	hljs.registerLanguage('ruby', __webpack_require__(76));
-	hljs.registerLanguage('erb', __webpack_require__(77));
-	hljs.registerLanguage('erlang-repl', __webpack_require__(78));
-	hljs.registerLanguage('erlang', __webpack_require__(79));
-	hljs.registerLanguage('excel', __webpack_require__(80));
-	hljs.registerLanguage('fix', __webpack_require__(81));
-	hljs.registerLanguage('flix', __webpack_require__(82));
-	hljs.registerLanguage('fortran', __webpack_require__(83));
-	hljs.registerLanguage('fsharp', __webpack_require__(84));
-	hljs.registerLanguage('gams', __webpack_require__(85));
-	hljs.registerLanguage('gauss', __webpack_require__(86));
-	hljs.registerLanguage('gcode', __webpack_require__(87));
-	hljs.registerLanguage('gherkin', __webpack_require__(88));
-	hljs.registerLanguage('glsl', __webpack_require__(89));
-	hljs.registerLanguage('go', __webpack_require__(90));
-	hljs.registerLanguage('golo', __webpack_require__(91));
-	hljs.registerLanguage('gradle', __webpack_require__(92));
-	hljs.registerLanguage('groovy', __webpack_require__(93));
-	hljs.registerLanguage('haml', __webpack_require__(94));
-	hljs.registerLanguage('handlebars', __webpack_require__(95));
-	hljs.registerLanguage('haskell', __webpack_require__(96));
-	hljs.registerLanguage('haxe', __webpack_require__(97));
-	hljs.registerLanguage('hsp', __webpack_require__(98));
-	hljs.registerLanguage('htmlbars', __webpack_require__(99));
-	hljs.registerLanguage('http', __webpack_require__(100));
-	hljs.registerLanguage('inform7', __webpack_require__(101));
-	hljs.registerLanguage('ini', __webpack_require__(102));
-	hljs.registerLanguage('irpf90', __webpack_require__(103));
-	hljs.registerLanguage('java', __webpack_require__(104));
-	hljs.registerLanguage('javascript', __webpack_require__(105));
-	hljs.registerLanguage('json', __webpack_require__(106));
-	hljs.registerLanguage('julia', __webpack_require__(107));
-	hljs.registerLanguage('kotlin', __webpack_require__(108));
-	hljs.registerLanguage('lasso', __webpack_require__(109));
-	hljs.registerLanguage('ldif', __webpack_require__(110));
-	hljs.registerLanguage('less', __webpack_require__(111));
-	hljs.registerLanguage('lisp', __webpack_require__(112));
-	hljs.registerLanguage('livecodeserver', __webpack_require__(113));
-	hljs.registerLanguage('livescript', __webpack_require__(114));
-	hljs.registerLanguage('lsl', __webpack_require__(115));
-	hljs.registerLanguage('lua', __webpack_require__(116));
-	hljs.registerLanguage('makefile', __webpack_require__(117));
-	hljs.registerLanguage('mathematica', __webpack_require__(118));
-	hljs.registerLanguage('matlab', __webpack_require__(119));
-	hljs.registerLanguage('maxima', __webpack_require__(120));
-	hljs.registerLanguage('mel', __webpack_require__(121));
-	hljs.registerLanguage('mercury', __webpack_require__(122));
-	hljs.registerLanguage('mipsasm', __webpack_require__(123));
-	hljs.registerLanguage('mizar', __webpack_require__(124));
-	hljs.registerLanguage('perl', __webpack_require__(125));
-	hljs.registerLanguage('mojolicious', __webpack_require__(126));
-	hljs.registerLanguage('monkey', __webpack_require__(127));
-	hljs.registerLanguage('moonscript', __webpack_require__(128));
-	hljs.registerLanguage('nginx', __webpack_require__(129));
-	hljs.registerLanguage('nimrod', __webpack_require__(130));
-	hljs.registerLanguage('nix', __webpack_require__(131));
-	hljs.registerLanguage('nsis', __webpack_require__(132));
-	hljs.registerLanguage('objectivec', __webpack_require__(133));
-	hljs.registerLanguage('ocaml', __webpack_require__(134));
-	hljs.registerLanguage('openscad', __webpack_require__(135));
-	hljs.registerLanguage('oxygene', __webpack_require__(136));
-	hljs.registerLanguage('parser3', __webpack_require__(137));
-	hljs.registerLanguage('pf', __webpack_require__(138));
-	hljs.registerLanguage('php', __webpack_require__(139));
-	hljs.registerLanguage('pony', __webpack_require__(140));
-	hljs.registerLanguage('powershell', __webpack_require__(141));
-	hljs.registerLanguage('processing', __webpack_require__(142));
-	hljs.registerLanguage('profile', __webpack_require__(143));
-	hljs.registerLanguage('prolog', __webpack_require__(144));
-	hljs.registerLanguage('protobuf', __webpack_require__(145));
-	hljs.registerLanguage('puppet', __webpack_require__(146));
-	hljs.registerLanguage('purebasic', __webpack_require__(147));
-	hljs.registerLanguage('python', __webpack_require__(148));
-	hljs.registerLanguage('q', __webpack_require__(149));
-	hljs.registerLanguage('qml', __webpack_require__(150));
-	hljs.registerLanguage('r', __webpack_require__(151));
-	hljs.registerLanguage('rib', __webpack_require__(152));
-	hljs.registerLanguage('roboconf', __webpack_require__(153));
-	hljs.registerLanguage('rsl', __webpack_require__(154));
-	hljs.registerLanguage('ruleslanguage', __webpack_require__(155));
-	hljs.registerLanguage('rust', __webpack_require__(156));
-	hljs.registerLanguage('scala', __webpack_require__(157));
-	hljs.registerLanguage('scheme', __webpack_require__(158));
-	hljs.registerLanguage('scilab', __webpack_require__(159));
-	hljs.registerLanguage('scss', __webpack_require__(160));
-	hljs.registerLanguage('smali', __webpack_require__(161));
-	hljs.registerLanguage('smalltalk', __webpack_require__(162));
-	hljs.registerLanguage('sml', __webpack_require__(163));
-	hljs.registerLanguage('sqf', __webpack_require__(164));
-	hljs.registerLanguage('sql', __webpack_require__(165));
-	hljs.registerLanguage('stan', __webpack_require__(166));
-	hljs.registerLanguage('stata', __webpack_require__(167));
-	hljs.registerLanguage('step21', __webpack_require__(168));
-	hljs.registerLanguage('stylus', __webpack_require__(169));
-	hljs.registerLanguage('subunit', __webpack_require__(170));
-	hljs.registerLanguage('swift', __webpack_require__(171));
-	hljs.registerLanguage('taggerscript', __webpack_require__(172));
-	hljs.registerLanguage('yaml', __webpack_require__(173));
-	hljs.registerLanguage('tap', __webpack_require__(174));
-	hljs.registerLanguage('tcl', __webpack_require__(175));
-	hljs.registerLanguage('tex', __webpack_require__(176));
-	hljs.registerLanguage('thrift', __webpack_require__(177));
-	hljs.registerLanguage('tp', __webpack_require__(178));
-	hljs.registerLanguage('twig', __webpack_require__(179));
-	hljs.registerLanguage('typescript', __webpack_require__(180));
-	hljs.registerLanguage('vala', __webpack_require__(181));
-	hljs.registerLanguage('vbnet', __webpack_require__(182));
-	hljs.registerLanguage('vbscript', __webpack_require__(183));
-	hljs.registerLanguage('vbscript-html', __webpack_require__(184));
-	hljs.registerLanguage('verilog', __webpack_require__(185));
-	hljs.registerLanguage('vhdl', __webpack_require__(186));
-	hljs.registerLanguage('vim', __webpack_require__(187));
-	hljs.registerLanguage('x86asm', __webpack_require__(188));
-	hljs.registerLanguage('xl', __webpack_require__(189));
-	hljs.registerLanguage('xquery', __webpack_require__(190));
-	hljs.registerLanguage('zephir', __webpack_require__(191));
+	hljs.registerLanguage('1c', __webpack_require__(3));
+	hljs.registerLanguage('abnf', __webpack_require__(4));
+	hljs.registerLanguage('accesslog', __webpack_require__(5));
+	hljs.registerLanguage('actionscript', __webpack_require__(6));
+	hljs.registerLanguage('ada', __webpack_require__(7));
+	hljs.registerLanguage('apache', __webpack_require__(8));
+	hljs.registerLanguage('applescript', __webpack_require__(9));
+	hljs.registerLanguage('cpp', __webpack_require__(10));
+	hljs.registerLanguage('arduino', __webpack_require__(11));
+	hljs.registerLanguage('armasm', __webpack_require__(12));
+	hljs.registerLanguage('xml', __webpack_require__(13));
+	hljs.registerLanguage('asciidoc', __webpack_require__(14));
+	hljs.registerLanguage('aspectj', __webpack_require__(15));
+	hljs.registerLanguage('autohotkey', __webpack_require__(16));
+	hljs.registerLanguage('autoit', __webpack_require__(17));
+	hljs.registerLanguage('avrasm', __webpack_require__(18));
+	hljs.registerLanguage('awk', __webpack_require__(19));
+	hljs.registerLanguage('axapta', __webpack_require__(20));
+	hljs.registerLanguage('bash', __webpack_require__(21));
+	hljs.registerLanguage('basic', __webpack_require__(22));
+	hljs.registerLanguage('bnf', __webpack_require__(23));
+	hljs.registerLanguage('brainfuck', __webpack_require__(24));
+	hljs.registerLanguage('cal', __webpack_require__(25));
+	hljs.registerLanguage('capnproto', __webpack_require__(26));
+	hljs.registerLanguage('ceylon', __webpack_require__(27));
+	hljs.registerLanguage('clean', __webpack_require__(28));
+	hljs.registerLanguage('clojure', __webpack_require__(29));
+	hljs.registerLanguage('clojure-repl', __webpack_require__(30));
+	hljs.registerLanguage('cmake', __webpack_require__(31));
+	hljs.registerLanguage('coffeescript', __webpack_require__(32));
+	hljs.registerLanguage('coq', __webpack_require__(33));
+	hljs.registerLanguage('cos', __webpack_require__(34));
+	hljs.registerLanguage('crmsh', __webpack_require__(35));
+	hljs.registerLanguage('crystal', __webpack_require__(36));
+	hljs.registerLanguage('cs', __webpack_require__(37));
+	hljs.registerLanguage('csp', __webpack_require__(38));
+	hljs.registerLanguage('css', __webpack_require__(39));
+	hljs.registerLanguage('d', __webpack_require__(40));
+	hljs.registerLanguage('markdown', __webpack_require__(41));
+	hljs.registerLanguage('dart', __webpack_require__(42));
+	hljs.registerLanguage('delphi', __webpack_require__(43));
+	hljs.registerLanguage('diff', __webpack_require__(44));
+	hljs.registerLanguage('django', __webpack_require__(45));
+	hljs.registerLanguage('dns', __webpack_require__(46));
+	hljs.registerLanguage('dockerfile', __webpack_require__(47));
+	hljs.registerLanguage('dos', __webpack_require__(48));
+	hljs.registerLanguage('dsconfig', __webpack_require__(49));
+	hljs.registerLanguage('dts', __webpack_require__(50));
+	hljs.registerLanguage('dust', __webpack_require__(51));
+	hljs.registerLanguage('ebnf', __webpack_require__(52));
+	hljs.registerLanguage('elixir', __webpack_require__(53));
+	hljs.registerLanguage('elm', __webpack_require__(54));
+	hljs.registerLanguage('ruby', __webpack_require__(55));
+	hljs.registerLanguage('erb', __webpack_require__(56));
+	hljs.registerLanguage('erlang-repl', __webpack_require__(57));
+	hljs.registerLanguage('erlang', __webpack_require__(58));
+	hljs.registerLanguage('excel', __webpack_require__(59));
+	hljs.registerLanguage('fix', __webpack_require__(60));
+	hljs.registerLanguage('flix', __webpack_require__(61));
+	hljs.registerLanguage('fortran', __webpack_require__(62));
+	hljs.registerLanguage('fsharp', __webpack_require__(63));
+	hljs.registerLanguage('gams', __webpack_require__(64));
+	hljs.registerLanguage('gauss', __webpack_require__(65));
+	hljs.registerLanguage('gcode', __webpack_require__(66));
+	hljs.registerLanguage('gherkin', __webpack_require__(67));
+	hljs.registerLanguage('glsl', __webpack_require__(68));
+	hljs.registerLanguage('go', __webpack_require__(69));
+	hljs.registerLanguage('golo', __webpack_require__(70));
+	hljs.registerLanguage('gradle', __webpack_require__(71));
+	hljs.registerLanguage('groovy', __webpack_require__(72));
+	hljs.registerLanguage('haml', __webpack_require__(73));
+	hljs.registerLanguage('handlebars', __webpack_require__(74));
+	hljs.registerLanguage('haskell', __webpack_require__(75));
+	hljs.registerLanguage('haxe', __webpack_require__(76));
+	hljs.registerLanguage('hsp', __webpack_require__(77));
+	hljs.registerLanguage('htmlbars', __webpack_require__(78));
+	hljs.registerLanguage('http', __webpack_require__(79));
+	hljs.registerLanguage('inform7', __webpack_require__(80));
+	hljs.registerLanguage('ini', __webpack_require__(81));
+	hljs.registerLanguage('irpf90', __webpack_require__(82));
+	hljs.registerLanguage('java', __webpack_require__(83));
+	hljs.registerLanguage('javascript', __webpack_require__(84));
+	hljs.registerLanguage('json', __webpack_require__(85));
+	hljs.registerLanguage('julia', __webpack_require__(86));
+	hljs.registerLanguage('kotlin', __webpack_require__(87));
+	hljs.registerLanguage('lasso', __webpack_require__(88));
+	hljs.registerLanguage('ldif', __webpack_require__(89));
+	hljs.registerLanguage('less', __webpack_require__(90));
+	hljs.registerLanguage('lisp', __webpack_require__(91));
+	hljs.registerLanguage('livecodeserver', __webpack_require__(92));
+	hljs.registerLanguage('livescript', __webpack_require__(93));
+	hljs.registerLanguage('lsl', __webpack_require__(94));
+	hljs.registerLanguage('lua', __webpack_require__(95));
+	hljs.registerLanguage('makefile', __webpack_require__(96));
+	hljs.registerLanguage('mathematica', __webpack_require__(97));
+	hljs.registerLanguage('matlab', __webpack_require__(98));
+	hljs.registerLanguage('maxima', __webpack_require__(99));
+	hljs.registerLanguage('mel', __webpack_require__(100));
+	hljs.registerLanguage('mercury', __webpack_require__(101));
+	hljs.registerLanguage('mipsasm', __webpack_require__(102));
+	hljs.registerLanguage('mizar', __webpack_require__(103));
+	hljs.registerLanguage('perl', __webpack_require__(104));
+	hljs.registerLanguage('mojolicious', __webpack_require__(105));
+	hljs.registerLanguage('monkey', __webpack_require__(106));
+	hljs.registerLanguage('moonscript', __webpack_require__(107));
+	hljs.registerLanguage('nginx', __webpack_require__(108));
+	hljs.registerLanguage('nimrod', __webpack_require__(109));
+	hljs.registerLanguage('nix', __webpack_require__(110));
+	hljs.registerLanguage('nsis', __webpack_require__(111));
+	hljs.registerLanguage('objectivec', __webpack_require__(112));
+	hljs.registerLanguage('ocaml', __webpack_require__(113));
+	hljs.registerLanguage('openscad', __webpack_require__(114));
+	hljs.registerLanguage('oxygene', __webpack_require__(115));
+	hljs.registerLanguage('parser3', __webpack_require__(116));
+	hljs.registerLanguage('pf', __webpack_require__(117));
+	hljs.registerLanguage('php', __webpack_require__(118));
+	hljs.registerLanguage('pony', __webpack_require__(119));
+	hljs.registerLanguage('powershell', __webpack_require__(120));
+	hljs.registerLanguage('processing', __webpack_require__(121));
+	hljs.registerLanguage('profile', __webpack_require__(122));
+	hljs.registerLanguage('prolog', __webpack_require__(123));
+	hljs.registerLanguage('protobuf', __webpack_require__(124));
+	hljs.registerLanguage('puppet', __webpack_require__(125));
+	hljs.registerLanguage('purebasic', __webpack_require__(126));
+	hljs.registerLanguage('python', __webpack_require__(127));
+	hljs.registerLanguage('q', __webpack_require__(128));
+	hljs.registerLanguage('qml', __webpack_require__(129));
+	hljs.registerLanguage('r', __webpack_require__(130));
+	hljs.registerLanguage('rib', __webpack_require__(131));
+	hljs.registerLanguage('roboconf', __webpack_require__(132));
+	hljs.registerLanguage('rsl', __webpack_require__(133));
+	hljs.registerLanguage('ruleslanguage', __webpack_require__(134));
+	hljs.registerLanguage('rust', __webpack_require__(135));
+	hljs.registerLanguage('scala', __webpack_require__(136));
+	hljs.registerLanguage('scheme', __webpack_require__(137));
+	hljs.registerLanguage('scilab', __webpack_require__(138));
+	hljs.registerLanguage('scss', __webpack_require__(139));
+	hljs.registerLanguage('smali', __webpack_require__(140));
+	hljs.registerLanguage('smalltalk', __webpack_require__(141));
+	hljs.registerLanguage('sml', __webpack_require__(142));
+	hljs.registerLanguage('sqf', __webpack_require__(143));
+	hljs.registerLanguage('sql', __webpack_require__(144));
+	hljs.registerLanguage('stan', __webpack_require__(145));
+	hljs.registerLanguage('stata', __webpack_require__(146));
+	hljs.registerLanguage('step21', __webpack_require__(147));
+	hljs.registerLanguage('stylus', __webpack_require__(148));
+	hljs.registerLanguage('subunit', __webpack_require__(149));
+	hljs.registerLanguage('swift', __webpack_require__(150));
+	hljs.registerLanguage('taggerscript', __webpack_require__(151));
+	hljs.registerLanguage('yaml', __webpack_require__(152));
+	hljs.registerLanguage('tap', __webpack_require__(153));
+	hljs.registerLanguage('tcl', __webpack_require__(154));
+	hljs.registerLanguage('tex', __webpack_require__(155));
+	hljs.registerLanguage('thrift', __webpack_require__(156));
+	hljs.registerLanguage('tp', __webpack_require__(157));
+	hljs.registerLanguage('twig', __webpack_require__(158));
+	hljs.registerLanguage('typescript', __webpack_require__(159));
+	hljs.registerLanguage('vala', __webpack_require__(160));
+	hljs.registerLanguage('vbnet', __webpack_require__(161));
+	hljs.registerLanguage('vbscript', __webpack_require__(162));
+	hljs.registerLanguage('vbscript-html', __webpack_require__(163));
+	hljs.registerLanguage('verilog', __webpack_require__(164));
+	hljs.registerLanguage('vhdl', __webpack_require__(165));
+	hljs.registerLanguage('vim', __webpack_require__(166));
+	hljs.registerLanguage('x86asm', __webpack_require__(167));
+	hljs.registerLanguage('xl', __webpack_require__(168));
+	hljs.registerLanguage('xquery', __webpack_require__(169));
+	hljs.registerLanguage('zephir', __webpack_require__(170));
 
 	module.exports = hljs;
 
 /***/ },
-/* 23 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -1485,7 +1150,7 @@ var index =
 
 
 /***/ },
-/* 24 */
+/* 3 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs){
@@ -1568,7 +1233,7 @@ var index =
 	};
 
 /***/ },
-/* 25 */
+/* 4 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -1643,7 +1308,7 @@ var index =
 	};
 
 /***/ },
-/* 26 */
+/* 5 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -1685,7 +1350,7 @@ var index =
 	};
 
 /***/ },
-/* 27 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -1763,7 +1428,7 @@ var index =
 	};
 
 /***/ },
-/* 28 */
+/* 7 */
 /***/ function(module, exports) {
 
 	module.exports = // We try to support full Ada2012
@@ -1940,7 +1605,7 @@ var index =
 	};
 
 /***/ },
-/* 29 */
+/* 8 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -1990,7 +1655,7 @@ var index =
 	};
 
 /***/ },
-/* 30 */
+/* 9 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -2080,7 +1745,7 @@ var index =
 	};
 
 /***/ },
-/* 31 */
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -2250,7 +1915,7 @@ var index =
 	};
 
 /***/ },
-/* 32 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -2354,7 +2019,7 @@ var index =
 	};
 
 /***/ },
-/* 33 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -2450,7 +2115,7 @@ var index =
 	};
 
 /***/ },
-/* 34 */
+/* 13 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -2557,7 +2222,7 @@ var index =
 	};
 
 /***/ },
-/* 35 */
+/* 14 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -2749,7 +2414,7 @@ var index =
 	};
 
 /***/ },
-/* 36 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = function (hljs) {
@@ -2897,7 +2562,7 @@ var index =
 	};
 
 /***/ },
-/* 37 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -2949,7 +2614,7 @@ var index =
 	};
 
 /***/ },
-/* 38 */
+/* 17 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3089,7 +2754,7 @@ var index =
 	};
 
 /***/ },
-/* 39 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3155,7 +2820,7 @@ var index =
 	};
 
 /***/ },
-/* 40 */
+/* 19 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3212,7 +2877,7 @@ var index =
 	};
 
 /***/ },
-/* 41 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3247,7 +2912,7 @@ var index =
 	};
 
 /***/ },
-/* 42 */
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3326,7 +2991,7 @@ var index =
 	};
 
 /***/ },
-/* 43 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3381,7 +3046,7 @@ var index =
 	};
 
 /***/ },
-/* 44 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs){
@@ -3414,7 +3079,7 @@ var index =
 	};
 
 /***/ },
-/* 45 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs){
@@ -3455,7 +3120,7 @@ var index =
 	};
 
 /***/ },
-/* 46 */
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3539,7 +3204,7 @@ var index =
 	};
 
 /***/ },
-/* 47 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3592,7 +3257,7 @@ var index =
 	};
 
 /***/ },
-/* 48 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3663,7 +3328,7 @@ var index =
 	};
 
 /***/ },
-/* 49 */
+/* 28 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3692,7 +3357,7 @@ var index =
 	};
 
 /***/ },
-/* 50 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3791,7 +3456,7 @@ var index =
 	};
 
 /***/ },
-/* 51 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3810,7 +3475,7 @@ var index =
 	};
 
 /***/ },
-/* 52 */
+/* 31 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3852,7 +3517,7 @@ var index =
 	};
 
 /***/ },
-/* 53 */
+/* 32 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -3995,7 +3660,7 @@ var index =
 	};
 
 /***/ },
-/* 54 */
+/* 33 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -4066,7 +3731,7 @@ var index =
 	};
 
 /***/ },
-/* 55 */
+/* 34 */
 /***/ function(module, exports) {
 
 	module.exports = function cos (hljs) {
@@ -4194,7 +3859,7 @@ var index =
 	};
 
 /***/ },
-/* 56 */
+/* 35 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -4292,7 +3957,7 @@ var index =
 	};
 
 /***/ },
-/* 57 */
+/* 36 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -4473,7 +4138,7 @@ var index =
 	};
 
 /***/ },
-/* 58 */
+/* 37 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -4644,7 +4309,7 @@ var index =
 	};
 
 /***/ },
-/* 59 */
+/* 38 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -4670,7 +4335,7 @@ var index =
 	};
 
 /***/ },
-/* 60 */
+/* 39 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -4779,7 +4444,7 @@ var index =
 	};
 
 /***/ },
-/* 61 */
+/* 40 */
 /***/ function(module, exports) {
 
 	module.exports = /**
@@ -5041,7 +4706,7 @@ var index =
 	};
 
 /***/ },
-/* 62 */
+/* 41 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5153,7 +4818,7 @@ var index =
 	};
 
 /***/ },
-/* 63 */
+/* 42 */
 /***/ function(module, exports) {
 
 	module.exports = function (hljs) {
@@ -5258,7 +4923,7 @@ var index =
 	};
 
 /***/ },
-/* 64 */
+/* 43 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5334,7 +4999,7 @@ var index =
 	};
 
 /***/ },
-/* 65 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5378,7 +5043,7 @@ var index =
 	};
 
 /***/ },
-/* 66 */
+/* 45 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5446,7 +5111,7 @@ var index =
 	};
 
 /***/ },
-/* 67 */
+/* 46 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5479,7 +5144,7 @@ var index =
 	};
 
 /***/ },
-/* 68 */
+/* 47 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5505,7 +5170,7 @@ var index =
 	};
 
 /***/ },
-/* 69 */
+/* 48 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5561,7 +5226,7 @@ var index =
 	};
 
 /***/ },
-/* 70 */
+/* 49 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5612,7 +5277,7 @@ var index =
 	};
 
 /***/ },
-/* 71 */
+/* 50 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5740,7 +5405,7 @@ var index =
 	};
 
 /***/ },
-/* 72 */
+/* 51 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5776,7 +5441,7 @@ var index =
 	};
 
 /***/ },
-/* 73 */
+/* 52 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5813,7 +5478,7 @@ var index =
 	};
 
 /***/ },
-/* 74 */
+/* 53 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -5914,7 +5579,7 @@ var index =
 	};
 
 /***/ },
-/* 75 */
+/* 54 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6001,7 +5666,7 @@ var index =
 	};
 
 /***/ },
-/* 76 */
+/* 55 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6181,7 +5846,7 @@ var index =
 	};
 
 /***/ },
-/* 77 */
+/* 56 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6200,7 +5865,7 @@ var index =
 	};
 
 /***/ },
-/* 78 */
+/* 57 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6250,7 +5915,7 @@ var index =
 	};
 
 /***/ },
-/* 79 */
+/* 58 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6400,7 +6065,7 @@ var index =
 	};
 
 /***/ },
-/* 80 */
+/* 59 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6452,7 +6117,7 @@ var index =
 	};
 
 /***/ },
-/* 81 */
+/* 60 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6485,7 +6150,7 @@ var index =
 	};
 
 /***/ },
-/* 82 */
+/* 61 */
 /***/ function(module, exports) {
 
 	module.exports = function (hljs) {
@@ -6534,7 +6199,7 @@ var index =
 	};
 
 /***/ },
-/* 83 */
+/* 62 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6609,7 +6274,7 @@ var index =
 	};
 
 /***/ },
-/* 84 */
+/* 63 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -6672,7 +6337,7 @@ var index =
 	};
 
 /***/ },
-/* 85 */
+/* 64 */
 /***/ function(module, exports) {
 
 	module.exports = function (hljs) {
@@ -6830,7 +6495,7 @@ var index =
 	};
 
 /***/ },
-/* 86 */
+/* 65 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7056,7 +6721,7 @@ var index =
 	};
 
 /***/ },
-/* 87 */
+/* 66 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7127,7 +6792,7 @@ var index =
 	};
 
 /***/ },
-/* 88 */
+/* 67 */
 /***/ function(module, exports) {
 
 	module.exports = function (hljs) {
@@ -7168,7 +6833,7 @@ var index =
 	};
 
 /***/ },
-/* 89 */
+/* 68 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7289,7 +6954,7 @@ var index =
 	};
 
 /***/ },
-/* 90 */
+/* 69 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7347,7 +7012,7 @@ var index =
 	};
 
 /***/ },
-/* 91 */
+/* 70 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7374,7 +7039,7 @@ var index =
 	};
 
 /***/ },
-/* 92 */
+/* 71 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7413,7 +7078,7 @@ var index =
 	};
 
 /***/ },
-/* 93 */
+/* 72 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7511,7 +7176,7 @@ var index =
 	};
 
 /***/ },
-/* 94 */
+/* 73 */
 /***/ function(module, exports) {
 
 	module.exports = // TODO support filter tags like :javascript, support inline HTML
@@ -7622,7 +7287,7 @@ var index =
 	};
 
 /***/ },
-/* 95 */
+/* 74 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7660,7 +7325,7 @@ var index =
 	};
 
 /***/ },
-/* 96 */
+/* 75 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7786,7 +7451,7 @@ var index =
 	};
 
 /***/ },
-/* 97 */
+/* 76 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7902,7 +7567,7 @@ var index =
 	};
 
 /***/ },
-/* 98 */
+/* 77 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -7952,7 +7617,7 @@ var index =
 	};
 
 /***/ },
-/* 99 */
+/* 78 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8027,7 +7692,7 @@ var index =
 	};
 
 /***/ },
-/* 100 */
+/* 79 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8072,7 +7737,7 @@ var index =
 	};
 
 /***/ },
-/* 101 */
+/* 80 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8133,7 +7798,7 @@ var index =
 	};
 
 /***/ },
-/* 102 */
+/* 81 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8203,7 +7868,7 @@ var index =
 	};
 
 /***/ },
-/* 103 */
+/* 82 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8283,7 +7948,7 @@ var index =
 	};
 
 /***/ },
-/* 104 */
+/* 83 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8395,7 +8060,7 @@ var index =
 	};
 
 /***/ },
-/* 105 */
+/* 84 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8570,7 +8235,7 @@ var index =
 	};
 
 /***/ },
-/* 106 */
+/* 85 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8611,7 +8276,7 @@ var index =
 	};
 
 /***/ },
-/* 107 */
+/* 86 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -8793,7 +8458,7 @@ var index =
 	};
 
 /***/ },
-/* 108 */
+/* 87 */
 /***/ function(module, exports) {
 
 	module.exports = function (hljs) {
@@ -8971,7 +8636,7 @@ var index =
 	};
 
 /***/ },
-/* 109 */
+/* 88 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9138,7 +8803,7 @@ var index =
 	};
 
 /***/ },
-/* 110 */
+/* 89 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9165,7 +8830,7 @@ var index =
 	};
 
 /***/ },
-/* 111 */
+/* 90 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9309,7 +8974,7 @@ var index =
 	};
 
 /***/ },
-/* 112 */
+/* 91 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9416,7 +9081,7 @@ var index =
 	};
 
 /***/ },
-/* 113 */
+/* 92 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9577,7 +9242,7 @@ var index =
 	};
 
 /***/ },
-/* 114 */
+/* 93 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9730,7 +9395,7 @@ var index =
 	};
 
 /***/ },
-/* 115 */
+/* 94 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9817,7 +9482,7 @@ var index =
 	};
 
 /***/ },
-/* 116 */
+/* 95 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9877,7 +9542,7 @@ var index =
 	};
 
 /***/ },
-/* 117 */
+/* 96 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9926,7 +9591,7 @@ var index =
 	};
 
 /***/ },
-/* 118 */
+/* 97 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -9988,7 +9653,7 @@ var index =
 	};
 
 /***/ },
-/* 119 */
+/* 98 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -10080,7 +9745,7 @@ var index =
 	};
 
 /***/ },
-/* 120 */
+/* 99 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -10490,7 +10155,7 @@ var index =
 	};
 
 /***/ },
-/* 121 */
+/* 100 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -10719,7 +10384,7 @@ var index =
 	};
 
 /***/ },
-/* 122 */
+/* 101 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -10805,7 +10470,7 @@ var index =
 	};
 
 /***/ },
-/* 123 */
+/* 102 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -10895,7 +10560,7 @@ var index =
 	};
 
 /***/ },
-/* 124 */
+/* 103 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -10918,7 +10583,7 @@ var index =
 	};
 
 /***/ },
-/* 125 */
+/* 104 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11079,7 +10744,7 @@ var index =
 	};
 
 /***/ },
-/* 126 */
+/* 105 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11108,7 +10773,7 @@ var index =
 	};
 
 /***/ },
-/* 127 */
+/* 106 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11187,7 +10852,7 @@ var index =
 	};
 
 /***/ },
-/* 128 */
+/* 107 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11303,7 +10968,7 @@ var index =
 	};
 
 /***/ },
-/* 129 */
+/* 108 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11400,7 +11065,7 @@ var index =
 	};
 
 /***/ },
-/* 130 */
+/* 109 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11459,7 +11124,7 @@ var index =
 	};
 
 /***/ },
-/* 131 */
+/* 110 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11512,7 +11177,7 @@ var index =
 	};
 
 /***/ },
-/* 132 */
+/* 111 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11622,7 +11287,7 @@ var index =
 	};
 
 /***/ },
-/* 133 */
+/* 112 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11717,7 +11382,7 @@ var index =
 	};
 
 /***/ },
-/* 134 */
+/* 113 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11792,7 +11457,7 @@ var index =
 	};
 
 /***/ },
-/* 135 */
+/* 114 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11853,7 +11518,7 @@ var index =
 	};
 
 /***/ },
-/* 136 */
+/* 115 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11927,7 +11592,7 @@ var index =
 	};
 
 /***/ },
-/* 137 */
+/* 116 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -11979,7 +11644,7 @@ var index =
 	};
 
 /***/ },
-/* 138 */
+/* 117 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12035,7 +11700,7 @@ var index =
 	};
 
 /***/ },
-/* 139 */
+/* 118 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12166,7 +11831,7 @@ var index =
 	};
 
 /***/ },
-/* 140 */
+/* 119 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12261,7 +11926,7 @@ var index =
 	};
 
 /***/ },
-/* 141 */
+/* 120 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12346,7 +12011,7 @@ var index =
 	};
 
 /***/ },
-/* 142 */
+/* 121 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12398,7 +12063,7 @@ var index =
 	};
 
 /***/ },
-/* 143 */
+/* 122 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12432,7 +12097,7 @@ var index =
 	};
 
 /***/ },
-/* 144 */
+/* 123 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12524,7 +12189,7 @@ var index =
 	};
 
 /***/ },
-/* 145 */
+/* 124 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12564,7 +12229,7 @@ var index =
 	};
 
 /***/ },
-/* 146 */
+/* 125 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12683,7 +12348,7 @@ var index =
 	};
 
 /***/ },
-/* 147 */
+/* 126 */
 /***/ function(module, exports) {
 
 	module.exports = // Base deafult colors in PB IDE: background: #FFFFDF; foreground: #000000;
@@ -12745,7 +12410,7 @@ var index =
 	};
 
 /***/ },
-/* 148 */
+/* 127 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12841,7 +12506,7 @@ var index =
 	};
 
 /***/ },
-/* 149 */
+/* 128 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -12868,7 +12533,7 @@ var index =
 	};
 
 /***/ },
-/* 150 */
+/* 129 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13041,7 +12706,7 @@ var index =
 	};
 
 /***/ },
-/* 151 */
+/* 130 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13115,7 +12780,7 @@ var index =
 	};
 
 /***/ },
-/* 152 */
+/* 131 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13146,7 +12811,7 @@ var index =
 	};
 
 /***/ },
-/* 153 */
+/* 132 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13217,7 +12882,7 @@ var index =
 	};
 
 /***/ },
-/* 154 */
+/* 133 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13257,7 +12922,7 @@ var index =
 	};
 
 /***/ },
-/* 155 */
+/* 134 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13322,7 +12987,7 @@ var index =
 	};
 
 /***/ },
-/* 156 */
+/* 135 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13430,7 +13095,7 @@ var index =
 	};
 
 /***/ },
-/* 157 */
+/* 136 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13549,7 +13214,7 @@ var index =
 	};
 
 /***/ },
-/* 158 */
+/* 137 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13694,7 +13359,7 @@ var index =
 	};
 
 /***/ },
-/* 159 */
+/* 138 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13752,7 +13417,7 @@ var index =
 	};
 
 /***/ },
-/* 160 */
+/* 139 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13854,7 +13519,7 @@ var index =
 	};
 
 /***/ },
-/* 161 */
+/* 140 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13914,7 +13579,7 @@ var index =
 	};
 
 /***/ },
-/* 162 */
+/* 141 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -13968,7 +13633,7 @@ var index =
 	};
 
 /***/ },
-/* 163 */
+/* 142 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -14038,7 +13703,7 @@ var index =
 	};
 
 /***/ },
-/* 164 */
+/* 143 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -14503,7 +14168,7 @@ var index =
 	};
 
 /***/ },
-/* 165 */
+/* 144 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -14667,7 +14332,7 @@ var index =
 	};
 
 /***/ },
-/* 166 */
+/* 145 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -14754,7 +14419,7 @@ var index =
 	};
 
 /***/ },
-/* 167 */
+/* 146 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -14796,7 +14461,7 @@ var index =
 	};
 
 /***/ },
-/* 168 */
+/* 147 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -14847,7 +14512,7 @@ var index =
 	};
 
 /***/ },
-/* 169 */
+/* 148 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15305,7 +14970,7 @@ var index =
 	};
 
 /***/ },
-/* 170 */
+/* 149 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15343,7 +15008,7 @@ var index =
 	};
 
 /***/ },
-/* 171 */
+/* 150 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15464,7 +15129,7 @@ var index =
 	};
 
 /***/ },
-/* 172 */
+/* 151 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15512,7 +15177,7 @@ var index =
 	};
 
 /***/ },
-/* 173 */
+/* 152 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15600,7 +15265,7 @@ var index =
 	};
 
 /***/ },
-/* 174 */
+/* 153 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15640,7 +15305,7 @@ var index =
 	};
 
 /***/ },
-/* 175 */
+/* 154 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15705,7 +15370,7 @@ var index =
 	};
 
 /***/ },
-/* 176 */
+/* 155 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15771,7 +15436,7 @@ var index =
 	};
 
 /***/ },
-/* 177 */
+/* 156 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15810,7 +15475,7 @@ var index =
 	};
 
 /***/ },
-/* 178 */
+/* 157 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15898,7 +15563,7 @@ var index =
 	};
 
 /***/ },
-/* 179 */
+/* 158 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -15968,7 +15633,7 @@ var index =
 	};
 
 /***/ },
-/* 180 */
+/* 159 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16081,7 +15746,7 @@ var index =
 	};
 
 /***/ },
-/* 181 */
+/* 160 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16135,7 +15800,7 @@ var index =
 	};
 
 /***/ },
-/* 182 */
+/* 161 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16195,7 +15860,7 @@ var index =
 	};
 
 /***/ },
-/* 183 */
+/* 162 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16238,7 +15903,7 @@ var index =
 	};
 
 /***/ },
-/* 184 */
+/* 163 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16254,7 +15919,7 @@ var index =
 	};
 
 /***/ },
-/* 185 */
+/* 164 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16357,7 +16022,7 @@ var index =
 	};
 
 /***/ },
-/* 186 */
+/* 165 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16422,7 +16087,7 @@ var index =
 	};
 
 /***/ },
-/* 187 */
+/* 166 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16532,7 +16197,7 @@ var index =
 	};
 
 /***/ },
-/* 188 */
+/* 167 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16672,7 +16337,7 @@ var index =
 	};
 
 /***/ },
-/* 189 */
+/* 168 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16749,7 +16414,7 @@ var index =
 	};
 
 /***/ },
-/* 190 */
+/* 169 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16824,7 +16489,7 @@ var index =
 	};
 
 /***/ },
-/* 191 */
+/* 170 */
 /***/ function(module, exports) {
 
 	module.exports = function(hljs) {
@@ -16935,7 +16600,7 @@ var index =
 	};
 
 /***/ },
-/* 192 */
+/* 171 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -16949,14 +16614,14 @@ var index =
 	    console.log('dom changed');
 	});
 	 */
-	var observeDOM = function () {
-		var MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
-		    eventListenerSupported = window.addEventListener;
+	const observeDOM = function () {
+		const MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
+		      eventListenerSupported = window.addEventListener;
 
 		return function (obj, callback) {
 			if (MutationObserver) {
 				// define a new observer
-				var obs = new MutationObserver(function (mutations, observer) {
+				const obs = new MutationObserver(function (mutations, observer) {
 					if (mutations[0].addedNodes.length || mutations[0].removedNodes.length) callback();
 				});
 				// have the observer observe foo for changes in children

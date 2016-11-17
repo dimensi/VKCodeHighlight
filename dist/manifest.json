@@ -29,7 +29,7 @@
 			"http://vk.com/*", "https://vk.com/*"
 		],
 		"js": [
-			"/files/js/highlight.pack.js",
+			//"/files/js/highlight.pack.js",
 			"index.js"
 		]
 	}]
