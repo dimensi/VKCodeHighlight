@@ -1,0 +1,24 @@
+{
+  "name": "vk-code-hightlight",
+  "version": "0.1.0",
+  "description": "Добавляет возможность вставлять код в чат",
+  "main": "index.js",
+  "scripts": {
+    "start": "set NODE_ENV=development&&webpack"
+  },
+  "keywords": [
+    "vk",
+    "highlight"
+  ],
+  "author": "Nikita Nafranets <eddimensi@gmail.com> (http://vk.com/dimensi)",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.7",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015": "^6.18.0",
+    "highlight.js": "^9.8.0",
+    "webpack": "^1.13.3"
+  }
+}
