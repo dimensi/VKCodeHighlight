@@ -4,7 +4,8 @@
   "description": "Добавляет возможность вставлять код в чат",
   "main": "index.js",
   "scripts": {
-    "start": "set NODE_ENV=development&&webpack"
+    "start": "brunch w",
+    "build": "brunch"
   },
   "keywords": [
     "vk",
