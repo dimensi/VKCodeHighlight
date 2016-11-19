@@ -1,6 +1,5 @@
 import hljs from 'highlight.js';
-import observeDOM from './observeDOM';
-
+import observeDOM from './vendors/observeDOM';
 
 /**
  * Класс для обработки и запуска подсветки
@@ -79,7 +78,6 @@ class VKCodeHighlight {
 		});
 	}
 }
-
 
 const start = new VKCodeHighlight('.im_msg_text');
 const myStyle = document.createElement('link');

@@ -13,6 +13,12 @@
   "author": "Nikita Nafranets <eddimensi@gmail.com> (http://vk.com/dimensi)",
   "license": "ISC",
   "dependencies": {
-    "highlight.js": "^9.8.0"
+    "babel-brunch": "^6.0.6",
+    "babel-preset-env": "0.0.8",
+    "brunch": "^2.9.1",
+    "css-brunch": "^2.6.1",
+    "highlight.js": "^9.8.0",
+    "javascript-brunch": "^2.0.0",
+    "stylus-brunch": "^2.8.0"
   }
 }
