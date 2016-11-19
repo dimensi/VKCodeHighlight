@@ -2,17 +2,22 @@ module.exports = {
 	files: {
 		javascripts: {
 			entryPoints: {
-				'app/index.js': 'vkchl.js'
-			}
+				'app/index.js': 'index.js'
+			},
 		},
-
 		stylesheets: {
 			joinTo: {
-				'style.css': 'style.styl'
+				'style.css': /^app/
 			}
 		}
 	},
 
+	modules: {
+		autoRequire: {
+			'index.js': ['index']
+		}
+	},
+	
 	plugins: {
 		babel: {
 			presets: [['env', {

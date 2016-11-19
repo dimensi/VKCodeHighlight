@@ -30,7 +30,7 @@
 		],
 		"js": [
 			//"/files/js/highlight.pack.js",
-			"vkchl.js"
+			"index.js"
 		]
 	}]
 }

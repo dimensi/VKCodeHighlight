@@ -1,6 +1,7 @@
-import hljs from 'highlight.js';
+//import hljs from 'highlight.js';
 import observeDOM from './vendors/observeDOM';
 
+alert('hello');
 /**
  * Класс для обработки и запуска подсветки
  * 
