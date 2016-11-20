@@ -15,7 +15,7 @@ const observeDOM = (function () {
 					callback();
 			});
 			// have the observer observe foo for changes in children
-			obs.observe(obj, { childList: true, subtree: true });
+			obs.observe(obj, { childList: true });
 		}
 		else if (eventListenerSupported) {
 			obj.addEventListener('DOMNodeInserted', callback, false);

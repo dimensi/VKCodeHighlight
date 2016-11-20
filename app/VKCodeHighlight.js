@@ -1,13 +1,10 @@
 import hljs from 'highlight.js';
-import observeDOM from './observeDOM';
-
-
 /**
  * Класс для обработки и запуска подсветки
  * 
  * @class VKCodeHighlight
  */
-class VKCodeHighlight {
+export default class VKCodeHighlight {
 
 	/**
 	 * Creates an instance of VKCodeHighlight.
@@ -16,8 +13,7 @@ class VKCodeHighlight {
 	 * 
 	 * @memberOf VKCodeHighlight
 	 */
-	constructor(el) {
-		this.chat = el;
+	constructor() {
 	}
 
 	/**
@@ -29,11 +25,22 @@ class VKCodeHighlight {
 	 */
 	get getElements() {
 		const arrEl = [];
-		const elements = document.querySelectorAll(this.chat);
-		elements.forEach(function (el) {
-			if (el.innerText.search(/-\/\//g) !== -1) {
-				arrEl.push(el);
+		const messages = document.querySelectorAll('.im-mess--text.wall_module._im_log_body');
+		messages.forEach(function (el) {
+			let newMessage = el.querySelector('.im_msg_text').childNodes ? el.querySelector('.im_msg_text').childNodes.length : false;
+			let childWithMessage = el.querySelector('.im_msg_text');
+			if (newMessage) {
+				// Проверяю, есть ли текст в основном блоке для сообщений, если есть, то добавляю этот блок в текст.
+				if (childWithMessage.innerText.startsWith('-//')) {
+					arrEl.push(childWithMessage);
+				}
+			} else {
+				// Текста не оказалось, поэтому работую с родителем.
+				if (el.innerText.startsWith('-//')) {
+					arrEl.push(el);
+				}
 			}
+			
 		});
 		return arrEl;
 	}
@@ -47,7 +54,8 @@ class VKCodeHighlight {
 	rebuildEl() {
 		const arrEl = this.getElements;
 		arrEl.forEach(function (el) {
-			el.innerHTML = el.innerHTML.replace(/-\/\//g, '').replace(/<br>/g, '\n');
+			let newText = el.innerHTML.slice(3).replace(/<br>/g, '\n').trim();
+			el.innerHTML = newText;
 			let newHtml = `<pre><code>${el.innerHTML}</pre></code>`;
 			el.innerHTML = newHtml;
 			el.classList.add('code');
@@ -79,19 +87,3 @@ class VKCodeHighlight {
 		});
 	}
 }
-
-
-const start = new VKCodeHighlight('.im_msg_text');
-const myStyle = document.createElement('link');
-myStyle.type = 'text/css';
-myStyle.rel = 'stylesheet';
-myStyle.href = chrome.extension.getURL('/files/styles/atom-one-light.css');
-document.head.appendChild(myStyle);
-
-myStyle.onload = () => {
-	start.init();
-};
-
-observeDOM(document.querySelector('._im_name_el'), function () {
-	start.reinit();
-});
