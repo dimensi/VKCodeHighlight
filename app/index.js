@@ -15,6 +15,5 @@ myStyle.onload = () => {
 
 const scrollEl = document.querySelector('.im-page--chat-body-abs .ui_scroll_bar_inner');
 observeDOM(scrollEl, function () {
-	console.log('text');
 	start.reinit();
 });
