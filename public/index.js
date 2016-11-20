@@ -16768,7 +16768,39 @@ require.register("highlight.js/lib/languages/zephir.js", function(exports, requi
 };
   })();
 });
-require.register("VKCodeHighlight.js", function(exports, require, module) {
+require.register("ObserveDom.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+class ObserveDom {
+	constructor(el, config = { childList: true }) {
+		this.el = el;
+		this.config = config;
+	}
+
+	setCallback(func) {
+		this.observe = new MutationObserver(function (mutations) {
+			mutations.forEach(function (mutations) {
+				func(mutations);
+			});
+		});
+	}
+
+	start() {
+		this.observe.observe(this.el, this.config);
+	}
+
+	disconnect() {
+		this.observe.disconnect();
+	}
+
+}
+exports.default = ObserveDom;
+});
+
+;require.register("VKCodeHighlight.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -16871,9 +16903,9 @@ exports.default = VKCodeHighlight;
 ;require.register("index.js", function(exports, require, module) {
 'use strict';
 
-var _observeDOM = require('./vendors/observeDOM');
+var _ObserveDom = require('./ObserveDom');
 
-var _observeDOM2 = _interopRequireDefault(_observeDOM);
+var _ObserveDom2 = _interopRequireDefault(_ObserveDom);
 
 var _VKCodeHighlight = require('./VKCodeHighlight');
 
@@ -16894,62 +16926,33 @@ myStyle.onload = () => {
 
 const scrollEl = document.querySelector('.im-page-chat-contain');
 let lastObserver;
-(0, _observeDOM2.default)(scrollEl, function (mutations) {
+
+const chatObserve = new _ObserveDom2.default(scrollEl);
+
+chatObserve.setCallback(function (mutations) {
 	if (lastObserver) {
 		console.log('Отключаюсь от прошлого слушателя');
 		lastObserver.disconnect();
 	}
+
 	console.log('Слушаю весь чат');
-	let arrNode = mutations[0].addedNodes;
-	if (arrNode.length !== 0) {
+
+	const arrNode = mutations.addedNodes;
+	if (arrNode.length) {
 		console.log('Массив с домом не пуст, запускаю второй слушатель');
-		let lastNode = arrNode[arrNode.length - 1];
-		let listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
-		const observeMessages = new MutationObserver(function (mutations) {
-			mutations.forEach(function () {
-				start.reinit();
-			});
+		const lastNode = arrNode[arrNode.length - 1];
+		const listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
+		const observeMessages = new _ObserveDom2.default(listOfMessages);
+		observeMessages.setCallback(function () {
+			console.log('Обновились сообщения в списке');
+			start.reinit();
 		});
-		lastObserver = observeMessages.observe(listOfMessages, { childList: true });
+		observeMessages.start();
+		lastObserver = observeMessages;
 	} else {
-		console.log('Массив был пуст, запускаю просто так');
 		start.reinit();
 	}
 });
-});
-
-require.register("vendors/observeDOM.js", function(exports, require, module) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-/**
- * // Observe a specific DOM element:
-observeDOM( document.getElementById('dom_element') ,function(){ 
-    console.log('dom changed');
-});
- */
-const observeDOM = function () {
-	const MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
-	      eventListenerSupported = window.addEventListener;
-
-	return function (obj, callback) {
-		if (MutationObserver) {
-			// define a new observer
-			const obs = new MutationObserver(function (mutations, observer) {
-				if (mutations[0].addedNodes.length || mutations[0].removedNodes.length) callback(mutations);
-			});
-			// have the observer observe foo for changes in children
-			obs.observe(obj, { childList: true });
-		} else if (eventListenerSupported) {
-			obj.addEventListener('DOMNodeInserted', callback, false);
-			obj.addEventListener('DOMNodeRemoved', callback, false);
-		}
-	};
-}();
-
-exports.default = observeDOM;
 });
 
 require.alias("highlight.js/lib/index.js", "highlight.js");require.register("___globals___", function(exports, require, module) {
