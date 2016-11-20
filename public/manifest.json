@@ -1,0 +1,36 @@
+{
+	"manifest_version": 2,
+	"name": "VK code highlight",
+	"description": "Подключает code highlight в переписке vk",
+	"version": "0.1",
+	"offline_enabled": false,
+	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+	"short_name": "VK CodeHL",
+	"permissions": [
+		"contextMenus",
+		"http://*/",
+		"https://*/"
+	],
+	"web_accessible_resources": [
+    "/files/styles/*.css",
+		"/files/js/*.js"
+  ],
+	"icons": {
+		"16": "/files/icon-16.png",
+		"32": "/files/icon-32.png",
+		"48": "/files/icon-48.png",
+		"64": "/files/icon-64.png",
+		"128": "/files/icon-128.png",
+		"256": "/files/icon-256.png",
+		"512": "/files/icon-512.png"
+	},
+	"content_scripts": [{
+		"matches": [
+			"http://vk.com/*", "https://vk.com/*"
+		],
+		"js": [
+			//"/files/js/highlight.pack.js",
+			"index.js"
+		]
+	}]
+}
