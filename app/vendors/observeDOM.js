@@ -12,7 +12,7 @@ const observeDOM = (function () {
 			// define a new observer
 			const obs = new MutationObserver(function (mutations, observer) {
 				if (mutations[0].addedNodes.length || mutations[0].removedNodes.length)
-					callback();
+					callback(mutations);
 			});
 			// have the observer observe foo for changes in children
 			obs.observe(obj, { childList: true });

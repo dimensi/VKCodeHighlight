@@ -16892,10 +16892,29 @@ myStyle.onload = () => {
 	start.init();
 };
 
-const scrollEl = document.querySelector('.im-page--chat-body-abs .ui_scroll_bar_inner');
-(0, _observeDOM2.default)(scrollEl, function () {
-	console.log('text');
-	start.reinit();
+const scrollEl = document.querySelector('.im-page-chat-contain');
+let lastObserver;
+(0, _observeDOM2.default)(scrollEl, function (mutations) {
+	if (lastObserver) {
+		console.log('Отключаюсь от прошлого слушателя');
+		lastObserver.disconnect();
+	}
+	console.log('Слушаю весь чат');
+	let arrNode = mutations[0].addedNodes;
+	if (arrNode.length !== 0) {
+		console.log('Массив с домом не пуст, запускаю второй слушатель');
+		let lastNode = arrNode[arrNode.length - 1];
+		let listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
+		const observeMessages = new MutationObserver(function (mutations) {
+			mutations.forEach(function () {
+				start.reinit();
+			});
+		});
+		lastObserver = observeMessages.observe(listOfMessages, { childList: true });
+	} else {
+		console.log('Массив был пуст, запускаю просто так');
+		start.reinit();
+	}
 });
 });
 
@@ -16919,7 +16938,7 @@ const observeDOM = function () {
 		if (MutationObserver) {
 			// define a new observer
 			const obs = new MutationObserver(function (mutations, observer) {
-				if (mutations[0].addedNodes.length || mutations[0].removedNodes.length) callback();
+				if (mutations[0].addedNodes.length || mutations[0].removedNodes.length) callback(mutations);
 			});
 			// have the observer observe foo for changes in children
 			obs.observe(obj, { childList: true });
