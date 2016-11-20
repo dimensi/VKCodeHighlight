@@ -13,32 +13,47 @@ myStyle.onload = () => {
 };
 
 
-const scrollEl = document.querySelector('.im-page-chat-contain');
-let lastObserver;
+// const chatContainer = document.querySelector('._im_peer_history.im-page-chat-contain');
+// let lastObserver;
 
-const chatObserve = new ObserveDom(scrollEl);
 
-chatObserve.setCallback(function(mutations) {
-	if (lastObserver) {
-		console.log('Отключаюсь от прошлого слушателя');
-		lastObserver.disconnect();
-	}
+// const chatObserve = new ObserveDom(chatContainer);
 
-	console.log('Слушаю весь чат');
+// chatObserve.setCallback(function(mutations) {
+// 	if (lastObserver) {
+// 		console.log('Отключаюсь от прошлого слушателя');
+// 		lastObserver.disconnect();
+// 	}
 
-	const arrNode = mutations.addedNodes;
-	if (arrNode.length) {
-		console.log('Массив с домом не пуст, запускаю второй слушатель');
-		const lastNode = arrNode[arrNode.length - 1];
-		const listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
-		const observeMessages = new ObserveDom(listOfMessages);
-		observeMessages.setCallback(function() {
-			console.log('Обновились сообщения в списке');
+// 	console.log('Слушаю весь чат');
+
+// 	const arrNode = mutations.addedNodes;
+// 	if (arrNode.length) {
+// 		console.log('Массив с домом не пуст, запускаю второй слушатель');
+// 		const lastNode = arrNode[arrNode.length - 1];
+// 		const listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
+// 		const observeMessages = new ObserveDom(listOfMessages);
+// 		observeMessages.setCallback(function() {
+// 			console.log('Обновились сообщения в списке');
+// 			start.reinit();
+// 		});
+// 		observeMessages.start();
+// 		lastObserver = observeMessages;
+// 	} else {
+// 		start.reinit();
+// 	}
+// });
+
+const chatBlock = document.querySelector('.im-page--history');
+let lastTime = 0;
+const observeChatBlock = new ObserveDom(chatBlock, { attributes: true });
+observeChatBlock.setCallback(function() {
+	if (lastTime + 3000 < Date.now()) {
+		if (!chatBlock.classList.contains('im-page--history_empty')) {
 			start.reinit();
-		});
-		observeMessages.start();
-		lastObserver = observeMessages;
-	} else {
-		start.reinit();
+			lastTime = Date.now();
+		}
 	}
 });
+
+observeChatBlock.start();

@@ -26,22 +26,22 @@ export default class VKCodeHighlight {
 	get getElements() {
 		const arrEl = [];
 		const messages = document.querySelectorAll('.im-mess--text.wall_module._im_log_body');
-		messages.forEach(function (el) {
-			let newMessage = el.querySelector('.im_msg_text').childNodes ? el.querySelector('.im_msg_text').childNodes.length : false;
-			let childWithMessage = el.querySelector('.im_msg_text');
-			if (newMessage) {
+		for (let el of messages) {
+			let newMessage = el.querySelector('.im_msg_text');
+			if (!newMessage === false) {
 				// Проверяю, есть ли текст в основном блоке для сообщений, если есть, то добавляю этот блок в текст.
-				if (childWithMessage.innerText.startsWith('-//')) {
-					arrEl.push(childWithMessage);
-				}
-			} else {
-				// Текста не оказалось, поэтому работую с родителем.
-				if (el.innerText.startsWith('-//')) {
-					arrEl.push(el);
+				if (newMessage.childNodes.length) {
+					if (newMessage.innerText.startsWith('-//')) {
+						arrEl.push(newMessage);
+						continue;
+					}
 				}
 			}
-			
-		});
+			//В основном блоке ничего не нашел, ищу в не основном, если нашел, добавляю.
+			if (el.innerText.startsWith('-//')) {
+				arrEl.push(el);
+			}
+		}
 		return arrEl;
 	}
 
@@ -81,9 +81,18 @@ export default class VKCodeHighlight {
 	 */
 	reinit() {
 		this.rebuildEl();
-		const arr = document.querySelectorAll('code');
-		arr.forEach(function (el) {
+		const arr = [].slice.call(document.querySelectorAll('code'));
+		chunkIt(arr);
+	}
+}
+
+function chunkIt(arr) {
+	if (arr.length) return;
+	setTimeout(function() {
+		const newArr = arr.slice(0,3);
+		newArr.forEach(function (el) {
 			hljs.highlightBlock(el);
 		});
-	}
+	}, 100);
+	return chunkIt(arr.slice(4));
 }

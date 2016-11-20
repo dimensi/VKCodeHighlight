@@ -16782,8 +16782,8 @@ class ObserveDom {
 
 	setCallback(func) {
 		this.observe = new MutationObserver(function (mutations) {
-			mutations.forEach(function (mutations) {
-				func(mutations);
+			mutations.forEach(function (mutation) {
+				func(mutation);
 			});
 		});
 	}
@@ -16839,21 +16839,22 @@ class VKCodeHighlight {
 	get getElements() {
 		const arrEl = [];
 		const messages = document.querySelectorAll('.im-mess--text.wall_module._im_log_body');
-		messages.forEach(function (el) {
-			let newMessage = el.querySelector('.im_msg_text').childNodes ? el.querySelector('.im_msg_text').childNodes.length : false;
-			let childWithMessage = el.querySelector('.im_msg_text');
-			if (newMessage) {
+		for (let el of messages) {
+			let newMessage = el.querySelector('.im_msg_text');
+			if (!newMessage === false) {
 				// Проверяю, есть ли текст в основном блоке для сообщений, если есть, то добавляю этот блок в текст.
-				if (childWithMessage.innerText.startsWith('-//')) {
-					arrEl.push(childWithMessage);
-				}
-			} else {
-				// Текста не оказалось, поэтому работую с родителем.
-				if (el.innerText.startsWith('-//')) {
-					arrEl.push(el);
+				if (newMessage.childNodes.length) {
+					if (newMessage.innerText.startsWith('-//')) {
+						arrEl.push(newMessage);
+						continue;
+					}
 				}
 			}
-		});
+			//В основном блоке ничего не нашел, ищу в не основном, если нашел, добавляю.
+			if (el.innerText.startsWith('-//')) {
+				arrEl.push(el);
+			}
+		}
 		return arrEl;
 	}
 
@@ -16891,13 +16892,22 @@ class VKCodeHighlight {
   */
 	reinit() {
 		this.rebuildEl();
-		const arr = document.querySelectorAll('code');
-		arr.forEach(function (el) {
-			_highlight2.default.highlightBlock(el);
-		});
+		const arr = [].slice.call(document.querySelectorAll('code'));
+		chunkIt(arr);
 	}
 }
+
 exports.default = VKCodeHighlight;
+function chunkIt(arr) {
+	if (arr.length) return;
+	setTimeout(function () {
+		const newArr = arr.slice(0, 3);
+		newArr.forEach(function (el) {
+			_highlight2.default.highlightBlock(el);
+		});
+	}, 100);
+	return chunkIt(arr.slice(4));
+}
 });
 
 ;require.register("index.js", function(exports, require, module) {
@@ -16924,35 +16934,50 @@ myStyle.onload = () => {
 	start.init();
 };
 
-const scrollEl = document.querySelector('.im-page-chat-contain');
-let lastObserver;
+// const chatContainer = document.querySelector('._im_peer_history.im-page-chat-contain');
+// let lastObserver;
 
-const chatObserve = new _ObserveDom2.default(scrollEl);
 
-chatObserve.setCallback(function (mutations) {
-	if (lastObserver) {
-		console.log('Отключаюсь от прошлого слушателя');
-		lastObserver.disconnect();
-	}
+// const chatObserve = new ObserveDom(chatContainer);
 
-	console.log('Слушаю весь чат');
+// chatObserve.setCallback(function(mutations) {
+// 	if (lastObserver) {
+// 		console.log('Отключаюсь от прошлого слушателя');
+// 		lastObserver.disconnect();
+// 	}
 
-	const arrNode = mutations.addedNodes;
-	if (arrNode.length) {
-		console.log('Массив с домом не пуст, запускаю второй слушатель');
-		const lastNode = arrNode[arrNode.length - 1];
-		const listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
-		const observeMessages = new _ObserveDom2.default(listOfMessages);
-		observeMessages.setCallback(function () {
-			console.log('Обновились сообщения в списке');
+// 	console.log('Слушаю весь чат');
+
+// 	const arrNode = mutations.addedNodes;
+// 	if (arrNode.length) {
+// 		console.log('Массив с домом не пуст, запускаю второй слушатель');
+// 		const lastNode = arrNode[arrNode.length - 1];
+// 		const listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
+// 		const observeMessages = new ObserveDom(listOfMessages);
+// 		observeMessages.setCallback(function() {
+// 			console.log('Обновились сообщения в списке');
+// 			start.reinit();
+// 		});
+// 		observeMessages.start();
+// 		lastObserver = observeMessages;
+// 	} else {
+// 		start.reinit();
+// 	}
+// });
+
+const chatBlock = document.querySelector('.im-page--history');
+let lastTime = 0;
+const observeChatBlock = new _ObserveDom2.default(chatBlock, { attributes: true });
+observeChatBlock.setCallback(function () {
+	if (lastTime + 3000 < Date.now()) {
+		if (!chatBlock.classList.contains('im-page--history_empty')) {
 			start.reinit();
-		});
-		observeMessages.start();
-		lastObserver = observeMessages;
-	} else {
-		start.reinit();
+			lastTime = Date.now();
+		}
 	}
 });
+
+observeChatBlock.start();
 });
 
 require.alias("highlight.js/lib/index.js", "highlight.js");require.register("___globals___", function(exports, require, module) {

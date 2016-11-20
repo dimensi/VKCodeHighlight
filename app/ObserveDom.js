@@ -6,8 +6,8 @@ export default class ObserveDom {
 
 	setCallback(func) {
 		this.observe = new MutationObserver(function(mutations) {
-			mutations.forEach(function(mutations) {
-				func(mutations);
+			mutations.forEach(function(mutation) {
+				func(mutation);
 			});
 		});
 	}
