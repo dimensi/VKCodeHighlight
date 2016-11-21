@@ -1,6 +1,6 @@
 {
   "name": "vk-code-hightlight",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "Добавляет возможность вставлять код в чат",
   "main": "index.js",
   "scripts": {
