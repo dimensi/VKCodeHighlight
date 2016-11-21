@@ -6,8 +6,7 @@ import chunk from 'lodash/chunk';
  * @class VKCodeHighlight
  */
 export default class VKCodeHighlight {
-	constructor() {
-	}
+	constructor() {}
 
 	/**
 	 * Возвращает список элементов, которые подходят под разметку
@@ -46,19 +45,21 @@ export default class VKCodeHighlight {
 	 */
 	wrapElements() {
 		const arrEl = this.getElements;
-		const rebuiledElements = [];
 		if (!arrEl.length) return;
+		const rebuiledElements = arrEl.reduce((result, el) => {
+			el.innerHTML = el.innerHTML.slice(3).replace(/»|«|—|<br>/g, function(match) {
+				if (match == '<br>') return '\n';
+				if (match == '»') return '>>';
+				if (match == '«') return '<<';
+				if (match == '—') return '--';
+			}).trim();
+			el.innerHTML = `<pre><code>${el.innerHTML}</pre></code>`;
+			el.classList.add('vkch');
+			result.push(el.querySelector('code'));
+			return result;
+		}, []).reverse();
 
-		arrEl.forEach(function (el) {
-			let newText = el.innerHTML.slice(3).replace(/<br>/g, '\n').trim();
-			el.innerHTML = newText;
-			let newHtml = `<pre><code>${el.innerHTML}</pre></code>`;
-			el.innerHTML = newHtml;
-			rebuiledElements.push(el.querySelector('code'));
-		});
-
-		const resultArr = chunk(rebuiledElements.filter(el => !el.classList.contains('hljs')).reverse(),10);
-
+		const resultArr = chunk(rebuiledElements.filter(el => !el.classList.contains('hljs')), 10);
 		chunkIt(resultArr);
 	}
 

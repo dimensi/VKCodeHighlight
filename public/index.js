@@ -18014,19 +18014,21 @@ class VKCodeHighlight {
   */
 	wrapElements() {
 		const arrEl = this.getElements;
-		const rebuiledElements = [];
 		if (!arrEl.length) return;
+		const rebuiledElements = arrEl.reduce((result, el) => {
+			el.innerHTML = el.innerHTML.slice(3).replace(/»|«|—|<br>/g, function (match) {
+				if (match == '<br>') return '\n';
+				if (match == '»') return '>>';
+				if (match == '«') return '<<';
+				if (match == '—') return '--';
+			}).trim();
+			el.innerHTML = `<pre><code>${ el.innerHTML }</pre></code>`;
+			el.classList.add('vkch');
+			result.push(el.querySelector('code'));
+			return result;
+		}, []).reverse();
 
-		arrEl.forEach(function (el) {
-			let newText = el.innerHTML.slice(3).replace(/<br>/g, '\n').trim();
-			el.innerHTML = newText;
-			let newHtml = `<pre><code>${ el.innerHTML }</pre></code>`;
-			el.innerHTML = newHtml;
-			rebuiledElements.push(el.querySelector('code'));
-		});
-
-		const resultArr = (0, _chunk2.default)(rebuiledElements.filter(el => !el.classList.contains('hljs')).reverse(), 10);
-
+		const resultArr = (0, _chunk2.default)(rebuiledElements.filter(el => !el.classList.contains('hljs')), 10);
 		(0, _chunkIt2.default)(resultArr);
 	}
 
@@ -18051,7 +18053,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function chunkIt(arr) {
 	if (arr.length) {
 		const headArr = arr.shift();
-		console.log(headArr);
 		headArr.forEach(function (el) {
 			_highlight2.default.highlightBlock(el);
 		});
@@ -18085,23 +18086,18 @@ myStyle.href = chrome.extension.getURL('/files/styles/atom-one-light.css');
 document.head.appendChild(myStyle);
 
 /**
- * Запускаю при загрузки стилей скрипт.
- */
-myStyle.onload = () => {
-	start.wrapElements();
-};
-
-/**
  * Устаналиваю параметры для слежения за чатом.
  */
 const observeChatBlock = new _ObserveDom2.default('.im-page--history', { attributes: true });
 observeChatBlock.setCallback((0, _debounce2.default)(function () {
 	if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
-		console.log('Я сработал');
 		start.wrapElements();
 	}
 }, 100));
 
+if (/vk.com\/im/.test(window.location.href)) {
+	observeChatBlock.start();
+}
 /**
  * Устанавливаю параметры для слежения на title
  */

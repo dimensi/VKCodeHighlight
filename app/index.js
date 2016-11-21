@@ -10,23 +10,18 @@ myStyle.href = chrome.extension.getURL('/files/styles/atom-one-light.css');
 document.head.appendChild(myStyle);
 
 /**
- * Запускаю при загрузки стилей скрипт.
- */
-myStyle.onload = () => {
-	start.wrapElements();
-};
-
-/**
  * Устаналиваю параметры для слежения за чатом.
  */
 const observeChatBlock = new ObserveDom('.im-page--history', { attributes: true });
 observeChatBlock.setCallback(debounce(function () {
 	if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
-		console.log('Я сработал');
 		start.wrapElements();
 	}	
 }, 100));
 
+if (/vk.com\/im/.test(window.location.href)) {
+	observeChatBlock.start();
+}
 /**
  * Устанавливаю параметры для слежения на title
  */
