@@ -20,12 +20,12 @@ myStyle.onload = () => {
  * Устаналиваю параметры для слежения за чатом.
  */
 const observeChatBlock = new ObserveDom('.im-page--history', { attributes: true });
-observeChatBlock.setCallback(function() {
+observeChatBlock.setCallback(debounce(function () {
 	if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
 		console.log('Я сработал');
 		start.wrapElements();
-	}
-});
+	}	
+}, 100));
 
 /**
  * Устанавливаю параметры для слежения на title

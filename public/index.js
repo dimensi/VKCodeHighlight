@@ -18045,16 +18045,18 @@ var _chunk2 = _interopRequireDefault(_chunk);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const go = array => {
+	const headArr = array.shift();
+	headArr.forEach(function (el) {
+		_highlight2.default.highlightBlock(el);
+	});
+	if (array.length) setTimeout(go, 200);
+};
+
 function chunkIt(arr) {
 	if (!arr.length) return;
 	let arrChunk = (0, _chunk2.default)(arr, 10);
-	setTimeout(function go() {
-		const headArr = arrChunk.shift();
-		headArr.forEach(function (el) {
-			_highlight2.default.highlightBlock(el);
-		});
-		if (arrChunk.length) setTimeout(go, 200);
-	}, 4);
+	go(arrChunk);
 }
 });
 
@@ -18093,12 +18095,12 @@ myStyle.onload = () => {
  * Устаналиваю параметры для слежения за чатом.
  */
 const observeChatBlock = new _ObserveDom2.default('.im-page--history', { attributes: true });
-observeChatBlock.setCallback(function () {
+observeChatBlock.setCallback((0, _debounce2.default)(function () {
 	if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
 		console.log('Я сработал');
 		start.wrapElements();
 	}
-});
+}, 100));
 
 /**
  * Устанавливаю параметры для слежения на title
