@@ -13,7 +13,7 @@ export default class ObserveDom {
 	}
 
 	start() {
-		this.observe.observe(this.el, this.config);
+		this.observe.observe(document.querySelector(this.el), this.config);
 	}
 
 	disconnect() {

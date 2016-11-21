@@ -17,7 +17,10 @@ module.exports = {
 			'index.js': ['index']
 		}
 	},
-	
+	watcher: {
+		awaitWriteFinish: true,
+		usePolling: true
+	},
 	plugins: {
 		babel: {
 			presets: [['env', {

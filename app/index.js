@@ -44,16 +44,31 @@ myStyle.onload = () => {
 // 	}
 // });
 
-const chatBlock = document.querySelector('.im-page--history');
+
+
+
 let lastTime = 0;
-const observeChatBlock = new ObserveDom(chatBlock, { attributes: true });
+const observeChatBlock = new ObserveDom('.im-page--history', { attributes: true });
 observeChatBlock.setCallback(function() {
-	if (lastTime + 3000 < Date.now()) {
-		if (!chatBlock.classList.contains('im-page--history_empty')) {
+	if (lastTime + 2000 < Date.now()) {
+		if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
 			start.reinit();
 			lastTime = Date.now();
 		}
 	}
 });
 
-observeChatBlock.start();
+const observeTitle = new ObserveDom('title');
+let changed = true;
+observeTitle.setCallback(function() {
+	if (/vk.com\/im/.test(window.location.href)) {
+		if (changed) {
+			observeChatBlock.start();
+			changed = false;
+		}
+	} else {
+		changed = true;
+		observeChatBlock.disconnect();
+	}
+});
+observeTitle.start();
