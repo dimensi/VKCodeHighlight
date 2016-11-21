@@ -1,4 +1,3 @@
-import hljs from 'highlight.js';
 import chunkIt from './chunkIt';
 /**
  * Класс для обработки и запуска подсветки
@@ -44,40 +43,19 @@ export default class VKCodeHighlight {
 	 * 
 	 * @memberOf VKCodeHighlight
 	 */
-	rebuildEl() {
+	wrapElements() {
 		const arrEl = this.getElements;
+		const rebuiledElements = [];
+		if (!arrEl.length) return;
 		arrEl.forEach(function (el) {
 			let newText = el.innerHTML.slice(3).replace(/<br>/g, '\n').trim();
 			el.innerHTML = newText;
 			let newHtml = `<pre><code>${el.innerHTML}</pre></code>`;
 			el.innerHTML = newHtml;
-			el.classList.add('code');
+			rebuiledElements.push(el.querySelector('code'));
 		});
+		const resultArr = rebuiledElements.filter(x => !x.classList.contains('hljs')).reverse();
+		chunkIt(resultArr);
 	}
 
-	/**
-	 * Первая инициализация
-	 * 
-	 * @memberOf VKCodeHighlight
-	 */
-	init() {
-		this.rebuildEl();
-		hljs.initHighlighting();
-	}
-
-
-
-	/**
-	 * 
-	 * Пересборка
-	 * 
-	 * @memberOf VKCodeHighlight
-	 */
-	reinit() {
-		this.rebuildEl();
-		const arr = [].slice.call(document.querySelectorAll('pre code'));
-		const filteredArr = arr.filter(x => !x.classList.contains('hljs'));
-		console.log(filteredArr);
-		chunkIt(filteredArr.reverse());
-	}
 }

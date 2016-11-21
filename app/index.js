@@ -1,5 +1,6 @@
 import ObserveDom from './ObserveDom';
 import VKCodeHighlight from './VKCodeHighlight';
+import debounce from 'lodash/debounce';
 
 const start = new VKCodeHighlight();
 const myStyle = document.createElement('link');
@@ -12,7 +13,7 @@ document.head.appendChild(myStyle);
  * Запускаю при загрузки стилей скрипт.
  */
 myStyle.onload = () => {
-	start.init();
+	start.wrapElements();
 };
 
 /**
@@ -21,7 +22,8 @@ myStyle.onload = () => {
 const observeChatBlock = new ObserveDom('.im-page--history', { attributes: true });
 observeChatBlock.setCallback(function() {
 	if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
-		start.reinit();
+		console.log('Я сработал');
+		start.wrapElements();
 	}
 });
 
