@@ -42,3 +42,34 @@ observeTitle.setCallback(function() {
 	}
 });
 observeTitle.start();
+
+// const chatContainer = document.querySelector('._im_peer_history.im-page-chat-contain');
+// let lastObserver;
+
+
+// const chatObserve = new ObserveDom(chatContainer);
+
+// chatObserve.setCallback(function(mutations) {
+// 	if (lastObserver) {
+// 		console.log('Отключаюсь от прошлого слушателя');
+// 		lastObserver.disconnect();
+// 	}
+
+// 	console.log('Слушаю весь чат');
+
+// 	const arrNode = mutations.addedNodes;
+// 	if (arrNode.length) {
+// 		console.log('Массив с домом не пуст, запускаю второй слушатель');
+// 		const lastNode = arrNode[arrNode.length - 1];
+// 		const listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
+// 		const observeMessages = new ObserveDom(listOfMessages);
+// 		observeMessages.setCallback(function() {
+// 			console.log('Обновились сообщения в списке');
+// 			start.reinit();
+// 		});
+// 		observeMessages.start();
+// 		lastObserver = observeMessages;
+// 	} else {
+// 		start.reinit();
+// 	}
+// });
