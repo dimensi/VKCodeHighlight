@@ -17964,6 +17964,10 @@ var _chunkIt = require('./chunkIt');
 
 var _chunkIt2 = _interopRequireDefault(_chunkIt);
 
+var _chunk = require('lodash/chunk');
+
+var _chunk2 = _interopRequireDefault(_chunk);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -18012,6 +18016,7 @@ class VKCodeHighlight {
 		const arrEl = this.getElements;
 		const rebuiledElements = [];
 		if (!arrEl.length) return;
+
 		arrEl.forEach(function (el) {
 			let newText = el.innerHTML.slice(3).replace(/<br>/g, '\n').trim();
 			el.innerHTML = newText;
@@ -18019,7 +18024,9 @@ class VKCodeHighlight {
 			el.innerHTML = newHtml;
 			rebuiledElements.push(el.querySelector('code'));
 		});
-		const resultArr = rebuiledElements.filter(x => !x.classList.contains('hljs')).reverse();
+
+		const resultArr = (0, _chunk2.default)(rebuiledElements.filter(el => !el.classList.contains('hljs')).reverse(), 10);
+
 		(0, _chunkIt2.default)(resultArr);
 	}
 
@@ -18039,24 +18046,17 @@ var _highlight = require('highlight.js');
 
 var _highlight2 = _interopRequireDefault(_highlight);
 
-var _chunk = require('lodash/chunk');
-
-var _chunk2 = _interopRequireDefault(_chunk);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const go = array => {
-	const headArr = array.shift();
-	headArr.forEach(function (el) {
-		_highlight2.default.highlightBlock(el);
-	});
-	if (array.length) setTimeout(go, 200);
-};
-
 function chunkIt(arr) {
-	if (!arr.length) return;
-	let arrChunk = (0, _chunk2.default)(arr, 10);
-	go(arrChunk);
+	if (arr.length) {
+		const headArr = arr.shift();
+		console.log(headArr);
+		headArr.forEach(function (el) {
+			_highlight2.default.highlightBlock(el);
+		});
+		setTimeout(() => chunkIt(arr), 1000);
+	}
 }
 });
 

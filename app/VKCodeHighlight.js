@@ -1,4 +1,5 @@
 import chunkIt from './chunkIt';
+import chunk from 'lodash/chunk';
 /**
  * Класс для обработки и запуска подсветки
  * 
@@ -47,6 +48,7 @@ export default class VKCodeHighlight {
 		const arrEl = this.getElements;
 		const rebuiledElements = [];
 		if (!arrEl.length) return;
+
 		arrEl.forEach(function (el) {
 			let newText = el.innerHTML.slice(3).replace(/<br>/g, '\n').trim();
 			el.innerHTML = newText;
@@ -54,7 +56,9 @@ export default class VKCodeHighlight {
 			el.innerHTML = newHtml;
 			rebuiledElements.push(el.querySelector('code'));
 		});
-		const resultArr = rebuiledElements.filter(x => !x.classList.contains('hljs')).reverse();
+
+		const resultArr = chunk(rebuiledElements.filter(el => !el.classList.contains('hljs')).reverse(),10);
+
 		chunkIt(resultArr);
 	}
 
