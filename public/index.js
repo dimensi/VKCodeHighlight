@@ -17810,14 +17810,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @class VKCodeHighlight
  */
 class VKCodeHighlight {
-
-	/**
-  * Creates an instance of VKCodeHighlight.
-  * 
-  * @param {string} el
-  * 
-  * @memberOf VKCodeHighlight
-  */
 	constructor() {}
 
 	/**
@@ -17952,23 +17944,28 @@ myStyle.rel = 'stylesheet';
 myStyle.href = chrome.extension.getURL('/files/styles/atom-one-light.css');
 document.head.appendChild(myStyle);
 
+/**
+ * Запускаю при загрузки стилей скрипт.
+ */
 myStyle.onload = () => {
 	start.init();
 };
 
-let lastTime = 0;
+/**
+ * Устаналиваю параметры для слежения за чатом.
+ */
 const observeChatBlock = new _ObserveDom2.default('.im-page--history', { attributes: true });
 observeChatBlock.setCallback(function () {
-	if (lastTime + 2000 < Date.now()) {
-		if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
-			start.reinit();
-			lastTime = Date.now();
-		}
+	if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
+		start.reinit();
 	}
 });
 
-const observeTitle = new _ObserveDom2.default('title');
+/**
+ * Устанавливаю параметры для слежения на title
+ */
 let changed = true;
+const observeTitle = new _ObserveDom2.default('title');
 observeTitle.setCallback(function () {
 	if (/vk.com\/im/.test(window.location.href)) {
 		if (changed) {

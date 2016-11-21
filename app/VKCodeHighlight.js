@@ -6,14 +6,6 @@ import chunkIt from './chunkIt';
  * @class VKCodeHighlight
  */
 export default class VKCodeHighlight {
-
-	/**
-	 * Creates an instance of VKCodeHighlight.
-	 * 
-	 * @param {string} el
-	 * 
-	 * @memberOf VKCodeHighlight
-	 */
 	constructor() {
 	}
 
