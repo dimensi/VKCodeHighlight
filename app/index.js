@@ -1,6 +1,12 @@
 import ObserveDom from './ObserveDom';
 import VKCodeHighlight from './VKCodeHighlight';
 import debounce from 'lodash/debounce';
+import hljs from 'highlight.js';
+
+hljs.configure({
+	languages: ['javascript', 'php', 'html', 'xml', 'xhtml', 'atom', 'css']
+});
+
 
 const start = new VKCodeHighlight();
 const myStyle = document.createElement('link');
@@ -12,11 +18,13 @@ document.head.appendChild(myStyle);
 /**
  * Устаналиваю параметры для слежения за чатом.
  */
-const observeChatBlock = new ObserveDom('.im-page--history', { attributes: true });
+const observeChatBlock = new ObserveDom('.im-page--history', {
+	attributes: true
+});
 observeChatBlock.setCallback(debounce(function () {
 	if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
 		start.wrapElements();
-	}	
+	}
 }, 100));
 
 if (/vk.com\/im/.test(window.location.href)) {
@@ -27,7 +35,7 @@ if (/vk.com\/im/.test(window.location.href)) {
  */
 let changed = true;
 const observeTitle = new ObserveDom('title');
-observeTitle.setCallback(function() {
+observeTitle.setCallback(function () {
 	if (/vk.com\/im/.test(window.location.href)) {
 		if (changed) {
 			observeChatBlock.start();
@@ -39,34 +47,3 @@ observeTitle.setCallback(function() {
 	}
 });
 observeTitle.start();
-
-// const chatContainer = document.querySelector('._im_peer_history.im-page-chat-contain');
-// let lastObserver;
-
-
-// const chatObserve = new ObserveDom(chatContainer);
-
-// chatObserve.setCallback(function(mutations) {
-// 	if (lastObserver) {
-// 		console.log('Отключаюсь от прошлого слушателя');
-// 		lastObserver.disconnect();
-// 	}
-
-// 	console.log('Слушаю весь чат');
-
-// 	const arrNode = mutations.addedNodes;
-// 	if (arrNode.length) {
-// 		console.log('Массив с домом не пуст, запускаю второй слушатель');
-// 		const lastNode = arrNode[arrNode.length - 1];
-// 		const listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
-// 		const observeMessages = new ObserveDom(listOfMessages);
-// 		observeMessages.setCallback(function() {
-// 			console.log('Обновились сообщения в списке');
-// 			start.reinit();
-// 		});
-// 		observeMessages.start();
-// 		lastObserver = observeMessages;
-// 	} else {
-// 		start.reinit();
-// 	}
-// });

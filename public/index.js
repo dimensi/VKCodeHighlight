@@ -18016,15 +18016,22 @@ class VKCodeHighlight {
 		const arrEl = this.getElements;
 		if (!arrEl.length) return;
 		const rebuiledElements = arrEl.reduce((result, el) => {
-			el.innerHTML = el.innerHTML.slice(3).replace(/»|«|—|<br>/g, function (match) {
+			let matchedLanguage;
+			el.innerHTML = el.innerHTML.replace(/»|«|—|<br>|-\/\/(\w*)/g, function (match, p1) {
 				if (match == '<br>') return '\n';
 				if (match == '»') return '>>';
 				if (match == '«') return '<<';
 				if (match == '—') return '--';
+				if (p1) {
+					matchedLanguage = p1;
+				}
+				return '';
 			}).trim();
 			el.innerHTML = `<pre><code>${ el.innerHTML }</pre></code>`;
 			el.classList.add('vkch');
-			result.push(el.querySelector('code'));
+			const codeBlock = el.querySelector('code');
+			if (matchedLanguage) codeBlock.classList.add(matchedLanguage);
+			result.push(codeBlock);
 			return result;
 		}, []).reverse();
 
@@ -18076,7 +18083,15 @@ var _debounce = require('lodash/debounce');
 
 var _debounce2 = _interopRequireDefault(_debounce);
 
+var _highlight = require('highlight.js');
+
+var _highlight2 = _interopRequireDefault(_highlight);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_highlight2.default.configure({
+	languages: ['javascript', 'php', 'html', 'xml', 'xhtml', 'atom', 'css']
+});
 
 const start = new _VKCodeHighlight2.default();
 const myStyle = document.createElement('link');
@@ -18088,7 +18103,9 @@ document.head.appendChild(myStyle);
 /**
  * Устаналиваю параметры для слежения за чатом.
  */
-const observeChatBlock = new _ObserveDom2.default('.im-page--history', { attributes: true });
+const observeChatBlock = new _ObserveDom2.default('.im-page--history', {
+	attributes: true
+});
 observeChatBlock.setCallback((0, _debounce2.default)(function () {
 	if (!document.querySelector('.im-page--history').classList.contains('im-page--history_empty')) {
 		start.wrapElements();
@@ -18115,37 +18132,6 @@ observeTitle.setCallback(function () {
 	}
 });
 observeTitle.start();
-
-// const chatContainer = document.querySelector('._im_peer_history.im-page-chat-contain');
-// let lastObserver;
-
-
-// const chatObserve = new ObserveDom(chatContainer);
-
-// chatObserve.setCallback(function(mutations) {
-// 	if (lastObserver) {
-// 		console.log('Отключаюсь от прошлого слушателя');
-// 		lastObserver.disconnect();
-// 	}
-
-// 	console.log('Слушаю весь чат');
-
-// 	const arrNode = mutations.addedNodes;
-// 	if (arrNode.length) {
-// 		console.log('Массив с домом не пуст, запускаю второй слушатель');
-// 		const lastNode = arrNode[arrNode.length - 1];
-// 		const listOfMessages = lastNode.querySelector('.im-mess-stack--mess');
-// 		const observeMessages = new ObserveDom(listOfMessages);
-// 		observeMessages.setCallback(function() {
-// 			console.log('Обновились сообщения в списке');
-// 			start.reinit();
-// 		});
-// 		observeMessages.start();
-// 		lastObserver = observeMessages;
-// 	} else {
-// 		start.reinit();
-// 	}
-// });
 });
 
 require.alias("highlight.js/lib/index.js", "highlight.js");
