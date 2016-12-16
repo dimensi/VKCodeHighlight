@@ -48,15 +48,20 @@ export default class VKCodeHighlight {
 		if (!arrEl.length) return;
 		const rebuiledElements = arrEl.reduce((result, el) => {
 			let matchedLanguage;
-			el.innerHTML = el.innerHTML.replace(/»|«|—|<br>|-\/\/(\w*)/g, function(match, p1) {
-				if (match == '<br>') return '\n';
-				if (match == '»') return '>>';
-				if (match == '«') return '<<';
-				if (match == '—') return '--';
-				if (p1) {
+			el.innerHTML = el.innerHTML.replace(/»|«|—|<br>|-\/\/(\w*)/g, function (match, p1) {
+				switch (match) {
+				case '<br>':
+					return '\n';
+				case '»':
+					return '>>';
+				case '«':
+					return '<<';
+				case '—':
+					return '--';
+				case p1:
 					matchedLanguage = p1;
+					return '';
 				}
-				return '';
 			}).trim();
 			el.innerHTML = `<pre><code>${el.innerHTML}</pre></code>`;
 			el.classList.add('vkch');

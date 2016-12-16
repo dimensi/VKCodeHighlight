@@ -31,7 +31,6 @@
 		"js": [
 			//"/files/js/highlight.pack.js",
 			"index.js"
-		],
-		"run_at": "document_start"
+		]
 	}]
 }
